@@ -4,7 +4,7 @@ A simple Visual Studio Code extension that opens a React-based webview to let us
 we are gonna add more cool features soon!
 ---
 
-##  current Features
+##  Current Features
 
 -  Write and save quick notes
 -  Stores notes using browser `localStorage`
@@ -62,7 +62,7 @@ vscode-notes-extension/
 
 
 
-## scripts
+## Scripts
 In package.json, you can add:
 
 "scripts": {
@@ -73,7 +73,7 @@ then run:
 npm run build    # One-time build
 npm run watch    # Auto-rebuild on changes
 
-# Contributing
+## Contributing
 Want to improve this extension? Awesome!
 
 1. Fork the repo.
