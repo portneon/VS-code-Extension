@@ -1,0 +1,36 @@
+{
+  "name": "react-webview-extension",
+  "displayName": "React Webview Extension",
+  "description": "A simple VS Code extension using React in Webview.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "activationEvents": [],
+  "main": "extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.showReactWebview",
+        "title": "Show React Webview"
+      }
+    ]
+  },
+  "scripts": {
+     "build": "webpack"
+  },
+  "categories": [
+    "Other"
+  ],
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.27.4",
+    "@babel/preset-env": "^7.27.2",
+    "@babel/preset-react": "^7.27.1",
+    "babel-loader": "^10.0.0",
+    "webpack-cli": "^6.0.1"
+  }
+}
