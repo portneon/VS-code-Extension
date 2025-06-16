@@ -29,7 +29,7 @@ Make sure you have the following installed:
 
 ```bash```
 git clone [https://github.com/your-username/VS-code-Extension.git](https://github.com/nst-sdc/VS-code-Extension.git)
-cd VS-code-Extension
+<br/> cd VS-code-Extension
 
 ### 2. Install dependencies
 npm install
