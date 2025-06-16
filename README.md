@@ -47,18 +47,18 @@ Wondering how to run the extension? here you go:
 
 ## Folder structure
 
-vscode-notes-extension/
-├── .vscode/
-│   └── launch.json          # VS Code debugger config
-├── dist/
-│   └── bundle.js            # Webview output by Webpack
-├── src/
-│   ├── App.js               # React component for notes
-│   └── index.js             # Entry file for Webpack
-├── extension.js             # Main VS Code extension logic
-├── package.json             # Project metadata & dependencies
-├── webpack.config.js        # Webpack config file
-└── README.md                # This file
+vscode-notes-extension/ <br/>
+├── .vscode/  <br/>
+│   └── launch.json          # VS Code debugger config  <br/>
+├── dist/  <br/>
+│   └── bundle.js            # Webview output by Webpack  <br/>
+├── src/  <br/>
+│   ├── App.js               # React component for notes  <br/>
+│   └── index.js             # Entry file for Webpack  <br/>
+├── extension.js             # Main VS Code extension logic  <br/>
+├── package.json             # Project metadata & dependencies  <br/>
+├── webpack.config.js        # Webpack config file  <br/>
+└── README.md                # This file  <br/>
 
 
 
