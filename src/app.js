@@ -3,26 +3,35 @@ import React, { useState, useEffect } from "react";
 const App = () => {
   const [note, setNote] = useState("");
   const [savedNote, setSavedNote] = useState("");
+  const [warning, setWarning] = useState("")
 
 
   useEffect(() => {
     const saved = localStorage.getItem("my-vscode-note");
     if (saved) {
       setSavedNote(saved);
-      setNote(saved);
+      setNote("");
     }
   }, []);
 
   const handleSave = () => {
+
+    if (note.trim() === "") {
+      setWarning("Cannot Save empty note!")
+      return
+    }
+
+    setWarning("")
     localStorage.setItem("my-vscode-note", note);
     setSavedNote(note);
-    alert("✅ Note Saved!");
+    setNote("")
   };
 
   const handleClear = () => {
     localStorage.removeItem("my-vscode-note");
     setNote("");
     setSavedNote("");
+    setWarning("")
   };
 
   return (
@@ -42,6 +51,9 @@ const App = () => {
           🧹 Clear
         </button>
       </div>
+
+      {warning && <div style={styles.warning}>{warning}</div>}
+
       {savedNote && (
         <div style={styles.saved}>
           <strong>🗒️ Saved Note:</strong>
@@ -100,6 +112,12 @@ const styles = {
     borderRadius: "6px",
     border: "1px solid #ccc",
   },
+  warning: {
+    color: "#cc3300",
+    margin: "30px 30px",
+    fontWeight: "bold",
+    fontSize: "20px"
+  }
 };
 
 export default App;
