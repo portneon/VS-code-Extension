@@ -28,7 +28,7 @@ Make sure you have the following installed:
 ### 1. Clone the repository
 
 ```bash```
-git clone https://github.com/your-username/vscode-notes-extension.git
+git clone https://github.com/your-username/VS-code-Extension.git
 cd vscode-notes-extension
 
 ### 2. Install dependencies
