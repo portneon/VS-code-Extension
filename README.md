@@ -28,8 +28,8 @@ Make sure you have the following installed:
 ### 1. Clone the repository
 
 ```bash```
-git clone https://github.com/your-username/VS-code-Extension.git
-cd vscode-notes-extension
+git clone [https://github.com/your-username/VS-code-Extension.git](https://github.com/nst-sdc/VS-code-Extension.git)
+cd VS-code-Extension
 
 ### 2. Install dependencies
 npm install
