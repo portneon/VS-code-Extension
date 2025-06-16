@@ -27,7 +27,7 @@ Make sure you have the following installed:
 
 ### 1. Clone the repository
 
-```bash
+```bash```
 git clone https://github.com/your-username/vscode-notes-extension.git
 cd vscode-notes-extension
 
@@ -43,7 +43,7 @@ Wondering how to run the extension? here you go:
 3. In the new VS Code window, open Command Palette (Ctrl+Shift+P or Cmd+Shift+P) and search:
 "Show React Webview"
 
-### tadaaa! Your note-taking UI will now appear!
+### Tadaaa! Your note-taking UI will now appear!
 
 ## Folder structure
 
@@ -97,7 +97,7 @@ npm install -D webpack-cli
 
 2. Not seeing your changes? Rebuild with npx webpack and restart the Extension Host window.
 
-Made with 💙 by @sakina1303
+### Made with 💙 by @sakina1303
 
 
 
