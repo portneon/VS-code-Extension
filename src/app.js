@@ -5,6 +5,7 @@ const App = () => {
   const [savedNote, setSavedNote] = useState("");
   const [warning, setWarning] = useState("");
   const [darkMode, setDarkMode] = useState(false);
+  const [selectedColor, setSelectedColor] = useState("#2B77BD");
 
   useEffect(() => {
     const saved = localStorage.getItem("my-vscode-note");
@@ -91,6 +92,28 @@ const App = () => {
           <p>{savedNote}</p>
         </div>
       )}
+
+      <div style={{ marginTop: "30px" }}>
+        <label htmlFor="colorPicker" style={{ marginRight: "10px", fontSize: "15px" }}>
+          🎨 Pick a Color:
+        </label>
+        <input
+          type="color"
+          id="colorPicker"
+          value={selectedColor}
+          onChange={(e) => setSelectedColor(e.target.value)}
+        />
+
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText(selectedColor);
+            alert(`HEX ${selectedColor} copied to clipboard!`);
+          }}
+          style={styles.colorBtn}
+        >
+          📋 Copy HEX
+        </button>
+      </div>
     </div>
   );
 };
@@ -148,9 +171,17 @@ const styles = {
   },
   warning: {
     color: "#cc3300",
-    margin: "30px 30px",
+    margin: "30px 0",
     fontWeight: "bold",
     fontSize: "18px",
+  },
+  colorBtn: {
+    marginLeft: "10px",
+    padding: "6px 12px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    backgroundColor: "#eee",
+    cursor: "pointer",
   },
 };
 
