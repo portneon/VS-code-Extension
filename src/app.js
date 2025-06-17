@@ -115,3 +115,8 @@ const styles = {
     color: "#cc3300",
     margin: "30px 30px",
     fontWeight: "bold",
+    fontSize: "20px",
+  },
+};
+
+export default App;
