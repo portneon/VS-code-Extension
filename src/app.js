@@ -6,12 +6,12 @@ const App = () => {
   const [warning, setWarning] = useState("");
   const [darkMode, setDarkMode] = useState(false);
   const [selectedColor, setSelectedColor] = useState("#2B77BD");
+  const [colorFormat, setColorFormat] = useState("hex");
 
   useEffect(() => {
     const saved = localStorage.getItem("my-vscode-note");
     if (saved) {
       setSavedNote(saved);
-      setNote("");
     }
   }, []);
 
@@ -31,6 +31,20 @@ const App = () => {
     setNote("");
     setSavedNote("");
     setWarning("");
+  };
+
+  const hexToRgb = (hex) => {
+    const bigint = parseInt(hex.replace("#", ""), 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return `rgb(${r}, ${g}, ${b})`;
+  };
+
+  const handleCopyColor = () => {
+    const colorValue = colorFormat === "hex" ? selectedColor : hexToRgb(selectedColor);
+    navigator.clipboard.writeText(colorValue);
+    alert(`${colorFormat.toUpperCase()} ${colorValue} copied to clipboard!`);
   };
 
   const styleContainer = {
@@ -104,14 +118,17 @@ const App = () => {
           onChange={(e) => setSelectedColor(e.target.value)}
         />
 
-        <button
-          onClick={() => {
-            navigator.clipboard.writeText(selectedColor);
-            alert(`HEX ${selectedColor} copied to clipboard!`);
-          }}
-          style={styles.colorBtn}
+        <select
+          value={colorFormat}
+          onChange={(e) => setColorFormat(e.target.value)}
+          style={styles.select}
         >
-          📋 Copy HEX
+          <option value="hex">HEX</option>
+          <option value="rgb">RGB</option>
+        </select>
+
+        <button onClick={handleCopyColor} style={styles.colorBtn}>
+          📋 Copy {colorFormat.toUpperCase()}
         </button>
       </div>
     </div>
@@ -176,6 +193,14 @@ const styles = {
     fontSize: "18px",
   },
   colorBtn: {
+    marginLeft: "10px",
+    padding: "6px 12px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    backgroundColor: "#eee",
+    cursor: "pointer",
+  },
+  select: {
     marginLeft: "10px",
     padding: "6px 12px",
     borderRadius: "5px",
