@@ -1,36 +1,88 @@
 import React, { useState, useEffect } from "react";
 
+const translations = {
+  english: {
+    title: "VS Code Notes",
+    placeholder: "Write your thoughts...",
+    saveButton: "Save Note",
+    clearButton: "Clear All",
+    saveNote: "Saved Notes",
+    languageLabel: "Language:",
+    pin: "📌 Pin",
+  },
+  hindi: {
+    title: "VS कोड नोट्स",
+    placeholder: "अपने विचार लिखें...",
+    saveButton: "नोट सहेजें",
+    clearButton: "सब साफ करें",
+    saveNote: "सहेजे गए नोट्स",
+    languageLabel: "भाषा:",
+    pin: "📌 पिन करें",
+  },
+  spanish: {
+    title: "Notas de VS Code",
+    placeholder: "Escribe tus pensamientos...",
+    saveButton: "Guardar Nota",
+    clearButton: "Borrar Todo",
+    saveNote: "Notas guardadas",
+    languageLabel: "Idioma:",
+    pin: "📌 Fijar",
+  },
+};
+
 const App = () => {
   const [note, setNote] = useState("");
-  const [savedNote, setSavedNote] = useState("");
+  const [savedNotes, setSavedNotes] = useState([]);
   const [warning, setWarning] = useState("");
   const [darkMode, setDarkMode] = useState(false);
+  const [language, setLanguage] = useState("english");
   const [selectedColor, setSelectedColor] = useState("#2B77BD");
   const [colorFormat, setColorFormat] = useState("hex");
 
   useEffect(() => {
-    const saved = localStorage.getItem("my-vscode-note");
+    const saved = localStorage.getItem("my-vscode-notes");
     if (saved) {
-      setSavedNote(saved);
+      setSavedNotes(JSON.parse(saved));
     }
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("my-vscode-notes", JSON.stringify(savedNotes));
+  }, [savedNotes]);
 
   const handleSave = () => {
     if (note.trim() === "") {
       setWarning("Cannot save an empty note!");
       return;
     }
-    setWarning("");
-    localStorage.setItem("my-vscode-note", note);
-    setSavedNote(note);
+    const newNote = {
+      id: Date.now(),
+      content: note,
+      pinned: false,
+    };
+    setSavedNotes((prev) => {
+      const pinned = prev.filter((n) => n.pinned);
+      const unpinned = prev.filter((n) => !n.pinned);
+      return [...pinned, newNote, ...unpinned];
+    });
     setNote("");
+    setWarning("");
+    alert("✅ Note Saved!");
   };
 
+
   const handleClear = () => {
-    localStorage.removeItem("my-vscode-note");
-    setNote("");
-    setSavedNote("");
+    localStorage.removeItem("my-vscode-notes");
+    setSavedNotes([]);
     setWarning("");
+  };
+
+  const togglePin = (id) => {
+    setSavedNotes((prev) =>
+      prev
+        .map((n) => (n.id === id ? { ...n, pinned: !n.pinned } : n))
+        .sort((a, b) => b.pinned - a.pinned || b.id - a.id)
+    );
   };
 
   const hexToRgb = (hex) => {
@@ -75,9 +127,23 @@ const App = () => {
 
   return (
     <div style={styleContainer}>
-      <h2 style={styles.heading}>📝 VS Code Notes</h2>
+      <h2 style={styles.heading}>📝 {translations[language].title}</h2>
+
+      <div style={styles.languageContainer}>
+        <h3>{translations[language].languageLabel}:</h3>
+        <select
+          value={language}
+          onChange={(e) => setLanguage(e.target.value)}
+          style={styles.select}
+        >
+          <option value="english">English</option>
+          <option value="hindi">हिन्दी</option>
+          <option value="spanish">Española</option>
+        </select>
+      </div>
+
       <textarea
-        placeholder="Write your thoughts..."
+        placeholder={translations[language].placeholder}
         value={note}
         onChange={(e) => setNote(e.target.value)}
         style={styleTextArea}
@@ -85,25 +151,37 @@ const App = () => {
 
       <div style={styles.buttonContainer}>
         <button onClick={handleSave} style={styles.saveBtn}>
-          💾 Save Note
+          💾 {translations[language].saveButton}
         </button>
         <button onClick={handleClear} style={styles.clearBtn}>
-          🧹 Clear
+          🧹 {translations[language].clearButton}
         </button>
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          style={styleToggleButton}
-        >
+        <button onClick={() => setDarkMode(!darkMode)} style={styleToggleButton}>
           {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
         </button>
       </div>
 
       {warning && <div style={styles.warning}>{warning}</div>}
 
-      {savedNote && (
+      {savedNotes.length > 0 && (
         <div style={styleSavedNotes}>
-          <strong>🗒️ Saved Note:</strong>
-          <p>{savedNote}</p>
+          <strong>🗒️ {translations[language].saveNote}:</strong>
+          {savedNotes.map((n) => (
+            <div key={n.id} style={styles.noteItem}>
+              <div style={styles.noteContent}>
+                <p style={{ margin: 0, flex: 1 }}>{n.content}</p>
+                <button
+                  onClick={() => togglePin(n.id)}
+                  style={{
+                    ...styles.pinBtn,
+                    backgroundColor: n.pinned ? "#ffd966" : "#e0e0e0",
+                  }}
+                >
+                  📌 {n.pinned ? "Pinned" : "Pin"}
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
@@ -144,6 +222,7 @@ const styles = {
   heading: {
     fontSize: "24px",
     marginBottom: "10px",
+    textAlign: "center",
   },
   textarea: {
     width: "100%",
@@ -201,12 +280,36 @@ const styles = {
     cursor: "pointer",
   },
   select: {
-    marginLeft: "10px",
+    border: "2px solid #ccc",
+    borderRadius: "4px",
+    padding: "8px",
+    marginLeft: "8px"
+  },
+  languageContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "8px",
+    marginBottom: "10px",
+  },
+  noteItem: {
+    padding: "10px 0",
+    borderBottom: "1px solid #ddd",
+  },
+  noteContent: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "10px",
+  },
+  pinBtn: {
+    border: "none",
     padding: "6px 12px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    backgroundColor: "#eee",
+    borderRadius: "20px",
     cursor: "pointer",
+    fontSize: "13px",
+    transition: "background-color 0.3s",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
   },
 };
 
