@@ -8,7 +8,7 @@ const translations = {
     clearButton: "Clear All",
     saveNote: "Saved Notes",
     languageLabel: "Language:",
-    pin: "📌 Pin",
+    pin: "Pin",
   },
   hindi: {
     title: "VS कोड नोट्स",
@@ -17,7 +17,7 @@ const translations = {
     clearButton: "सब साफ करें",
     saveNote: "सहेजे गए नोट्स",
     languageLabel: "भाषा:",
-    pin: "📌 पिन करें",
+    pin: "पिन करें",
   },
   spanish: {
     title: "Notas de VS Code",
@@ -26,7 +26,7 @@ const translations = {
     clearButton: "Borrar Todo",
     saveNote: "Notas guardadas",
     languageLabel: "Idioma:",
-    pin: "📌 Fijar",
+    pin: "Fijar",
   },
 };
 
@@ -69,7 +69,6 @@ const App = () => {
     setWarning("");
     alert("✅ Note Saved!");
   };
-
 
   const handleClear = () => {
     localStorage.removeItem("my-vscode-notes");
@@ -177,7 +176,7 @@ const App = () => {
                     backgroundColor: n.pinned ? "#ffd966" : "#e0e0e0",
                   }}
                 >
-                  📌 {n.pinned ? "Pinned" : "Pin"}
+                  📌 {n.pinned ? "Pinned" : translations[language].pin}
                 </button>
               </div>
             </div>
@@ -283,7 +282,7 @@ const styles = {
     border: "2px solid #ccc",
     borderRadius: "4px",
     padding: "8px",
-    marginLeft: "8px"
+    marginLeft: "8px",
   },
   languageContainer: {
     display: "flex",
