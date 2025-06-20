@@ -16,10 +16,20 @@
       }
     ]
   },
+<<<<<<< HEAD
   "scripts": {
     "build": "webpack",
     "watch": "webpack --watch"
   },
+=======
+
+  "scripts": {
+    "start": "webpack serve --mode development",
+    "build": "webpack"
+    "watch": "webpack --watch"
+  },
+
+>>>>>>> e580be1901b0dae8cdbf6c050bb8bf689858f7f6
   "categories": [
     "Other"
   ],
@@ -33,6 +43,7 @@
     "@babel/preset-env": "^7.27.2",
     "@babel/preset-react": "^7.27.1",
     "babel-loader": "^10.0.0",
-    "webpack-cli": "^6.0.1"
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2"
   }
 }
