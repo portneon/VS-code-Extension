@@ -81,11 +81,11 @@ const App = () => {
     const file = `note_${new Date().toISOString().slice(0, 19)}.${format}`;
     if (format == "pdf") {
       const doc = new jsPDF()
-      const lines = doc.splitTextToSize(savedNote, 180);
+      const lines = doc.splitTextToSize(savedNotes, 180);
       doc.text(lines, 10, 10)
       doc.save(file)
     } else {
-      const blob = new Blob([savedNote], { type: "text/plain" });
+      const blob = new Blob([savedNotes], { type: "text/plain" });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob)
       link.download = file
@@ -180,10 +180,10 @@ const App = () => {
 
       {warning && <div style={styles.warning}>{warning}</div>}
 
-      {savedNote && (
-        <div style={styles.saved}>
+      {savedNotes && (
+        <div style={styleSavedNotes}>
           <strong>🗒️ Saved Note:</strong>
-          <p>{savedNote}</p>
+          <p>{savedNotes}</p>
           <button onClick={() => Downloadnotes("txt")}>Download as .txt</button>
           <button onClick={() => Downloadnotes("md")}>Download as .md</button>
           <button onClick={() => Downloadnotes("pdf")}>Download as .pdf</button>
