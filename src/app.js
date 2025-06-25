@@ -9,6 +9,15 @@ const translations = {
     saveNote: "Saved Notes",
     languageLabel: "Language:",
     pin: "Pin",
+    jsonValidator: "JSON Validator & Formatter",
+    jsonPlaceholder: "Paste or type your JSON here...",
+    validateButton: "Validate JSON",
+    beautifyButton: "Beautify JSON",
+    clearJsonButton: "Clear JSON",
+    validJson: "✅ Valid JSON",
+    invalidJson: "❌ Invalid JSON:",
+    beautifiedJson: "Beautified JSON:",
+    copyJsonButton: "Copy JSON",
   },
   hindi: {
     title: "VS कोड नोट्स",
@@ -18,6 +27,15 @@ const translations = {
     saveNote: "सहेजे गए नोट्स",
     languageLabel: "भाषा:",
     pin: "पिन करें",
+    jsonValidator: "JSON सत्यापनकर्ता और फॉर्मेटर",
+    jsonPlaceholder: "अपना JSON यहाँ पेस्ट या टाइप करें...",
+    validateButton: "JSON सत्यापित करें",
+    beautifyButton: "JSON को सुंदर बनाएं",
+    clearJsonButton: "JSON साफ करें",
+    validJson: "✅ वैध JSON",
+    invalidJson: "❌ अवैध JSON:",
+    beautifiedJson: "सुंदर JSON:",
+    copyJsonButton: "JSON कॉपी करें",
   },
   spanish: {
     title: "Notas de VS Code",
@@ -27,8 +45,18 @@ const translations = {
     saveNote: "Notas guardadas",
     languageLabel: "Idioma:",
     pin: "Fijar",
+    jsonValidator: "Validador y Formateador JSON",
+    jsonPlaceholder: "Pega o escribe tu JSON aquí...",
+    validateButton: "Validar JSON",
+    beautifyButton: "Embellecer JSON",
+    clearJsonButton: "Limpiar JSON",
+    validJson: "✅ JSON Válido",
+    invalidJson: "❌ JSON Inválido:",
+    beautifiedJson: "JSON Embellecido:",
+    copyJsonButton: "Copiar JSON",
   },
 };
+
 const devTips = [
   "Use meaningful variable names to improve code readability, e.g., `userCount` instead of `x`.",
   "Break down complex functions into smaller, single-purpose functions for better maintainability.",
@@ -51,9 +79,32 @@ const devTips = [
   "Write clear error messages that help users understand and resolve issues.",
   "Stay curious and experiment with new tools or languages to broaden your skillset.",
 ];
+
 const getRandomTip = () => {
   const index = Math.floor(Math.random() * devTips.length);
   return devTips[index];
+};
+
+const showMessage = (message) => {
+  // Create a temporary toast message
+  const toast = document.createElement('div');
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    z-index: 1000;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    document.body.removeChild(toast);
+  }, 3000);
 };
 
 const App = () => {
@@ -66,15 +117,31 @@ const App = () => {
   const [colorFormat, setColorFormat] = useState("hex");
   const [devTip, setDevTip] = useState("");
 
+  // JSON Validator states
+  const [jsonInput, setJsonInput] = useState("");
+  const [jsonValidationResult, setJsonValidationResult] = useState("");
+  const [beautifiedJson, setBeautifiedJson] = useState("");
+  const [isJsonValid, setIsJsonValid] = useState(null);
+
   useEffect(() => {
-    const saved = localStorage.getItem("my-vscode-notes");
-    if (saved) {
-      setSavedNotes(JSON.parse(saved));
+    // Note: localStorage is not available in VS Code webview context
+    // You might need to use VS Code's state persistence instead
+    try {
+      const saved = localStorage.getItem("my-vscode-notes");
+      if (saved) {
+        setSavedNotes(JSON.parse(saved));
+      }
+    } catch (error) {
+      console.log("localStorage not available in VS Code context");
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("my-vscode-notes", JSON.stringify(savedNotes));
+    try {
+      localStorage.setItem("my-vscode-notes", JSON.stringify(savedNotes));
+    } catch (error) {
+      console.log("localStorage not available in VS Code context");
+    }
   }, [savedNotes]);
 
   const handleSave = () => {
@@ -98,7 +165,11 @@ const App = () => {
   };
 
   const handleClear = () => {
-    localStorage.removeItem("my-vscode-notes");
+    try {
+      localStorage.removeItem("my-vscode-notes");
+    } catch (error) {
+      console.log("localStorage not available in VS Code context");
+    }
     setSavedNotes([]);
     setWarning("");
   };
@@ -127,8 +198,60 @@ const App = () => {
       `${colorFormat.toUpperCase()} ${colorValue} copied to clipboard!`
     );
   };
+
+  // JSON Validator functions
+  const validateJson = () => {
+    if (!jsonInput.trim()) {
+      setJsonValidationResult("Please enter some JSON to validate.");
+      setIsJsonValid(false);
+      return;
+    }
+
+    try {
+      JSON.parse(jsonInput);
+      setJsonValidationResult(translations[language].validJson);
+      setIsJsonValid(true);
+    } catch (error) {
+      setJsonValidationResult(`${translations[language].invalidJson} ${error.message}`);
+      setIsJsonValid(false);
+    }
+  };
+
+  const beautifyJson = () => {
+    if (!jsonInput.trim()) {
+      setBeautifiedJson("Please enter some JSON to beautify.");
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(jsonInput);
+      const formatted = JSON.stringify(parsed, null, 2);
+      setBeautifiedJson(formatted);
+      setJsonValidationResult(translations[language].validJson);
+      setIsJsonValid(true);
+    } catch (error) {
+      setBeautifiedJson(`Error: ${error.message}`);
+      setJsonValidationResult(`${translations[language].invalidJson} ${error.message}`);
+      setIsJsonValid(false);
+    }
+  };
+
+  const clearJson = () => {
+    setJsonInput("");
+    setJsonValidationResult("");
+    setBeautifiedJson("");
+    setIsJsonValid(null);
+  };
+
+  const copyBeautifiedJson = () => {
+    if (beautifiedJson && isJsonValid) {
+      navigator.clipboard.writeText(beautifiedJson);
+      showMessage("✅ JSON copied to clipboard!");
+    }
+  };
+
   useEffect(() => {
-    setDevTip(getRandomTip);
+    setDevTip(getRandomTip());
   }, []);
 
   const styleContainer = {
@@ -173,6 +296,7 @@ const App = () => {
           <option value="spanish">Española</option>
         </select>
       </div>
+
       <div style={styles.devTipContainer}>
         <h3 style={styles.devHeading}>dev TIPS</h3>
         <p>{devTip}</p>
@@ -224,6 +348,126 @@ const App = () => {
         </div>
       )}
 
+      <div style={{
+        marginTop: "40px",
+        padding: "25px",
+        backgroundColor: darkMode ? "#1e1e1e" : "#ffffff",
+        border: darkMode ? "2px solid #555" : "2px solid #ddd",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+      }}>
+        <h3 style={{
+          fontSize: "20px",
+          marginBottom: "20px",
+          color: darkMode ? "#ffffff" : "#2B77BD",
+          textAlign: "center",
+          borderBottom: darkMode ? "2px solid #555" : "2px solid #ddd",
+          paddingBottom: "10px"
+        }}>
+          🔧 {translations[language].jsonValidator}
+        </h3>
+
+        <textarea
+          placeholder={translations[language].jsonPlaceholder}
+          value={jsonInput}
+          onChange={(e) => setJsonInput(e.target.value)}
+          style={{
+            width: "100%",
+            height: "150px",
+            padding: "15px",
+            fontSize: "14px",
+            fontFamily: "Consolas, Monaco, 'Courier New', monospace",
+            borderRadius: "8px",
+            border: darkMode ? "2px solid #555" : "2px solid #ccc",
+            backgroundColor: darkMode ? "#2a2a2a" : "#fff",
+            color: darkMode ? "#fff" : "#000",
+            resize: "vertical",
+            outline: "none",
+            boxSizing: "border-box"
+          }}
+        ></textarea>
+
+        <div style={{
+          marginTop: "15px",
+          display: "flex",
+          gap: "12px",
+          flexWrap: "wrap",
+          justifyContent: "center"
+        }}>
+          <button onClick={validateJson} style={styles.validateBtn}>
+            {translations[language].validateButton}
+          </button>
+          <button onClick={beautifyJson} style={styles.beautifyBtn}>
+            ✨ {translations[language].beautifyButton}
+          </button>
+          <button onClick={clearJson} style={styles.clearJsonBtn}>
+            🧹 {translations[language].clearJsonButton}
+          </button>
+        </div>
+
+        {jsonValidationResult && (
+          <div style={{
+            marginTop: "20px",
+            padding: "15px",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            fontSize: "16px",
+            textAlign: "center",
+            color: isJsonValid ? "#4CAF50" : "#f44336",
+            backgroundColor: darkMode ? "#2a2a2a" : "#f9f9f9",
+            border: `2px solid ${isJsonValid ? "#4CAF50" : "#f44336"}`
+          }}>
+            {jsonValidationResult}
+          </div>
+        )}
+
+        {beautifiedJson && isJsonValid && (
+          <div style={{
+            marginTop: "25px",
+            padding: "20px",
+            backgroundColor: darkMode ? "#2a2a2a" : "#f8f9fa",
+            border: darkMode ? "2px solid #555" : "2px solid #ddd",
+            borderRadius: "8px"
+          }}>
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "15px",
+              borderBottom: darkMode ? "1px solid #555" : "1px solid #ddd",
+              paddingBottom: "10px"
+            }}>
+              <h4 style={{
+                margin: 0,
+                color: darkMode ? "#ffffff" : "#333",
+                fontSize: "16px"
+              }}>
+                {translations[language].beautifiedJson}
+              </h4>
+              <button onClick={copyBeautifiedJson} style={styles.copyBtn}>
+                📋 {translations[language].copyJsonButton}
+              </button>
+            </div>
+            <pre style={{
+              padding: "20px",
+              borderRadius: "6px",
+              fontSize: "13px",
+              fontFamily: "Consolas, Monaco, 'Courier New', monospace",
+              overflow: "auto",
+              maxHeight: "400px",
+              whiteSpace: "pre-wrap",
+              wordWrap: "break-word",
+              margin: 0,
+              backgroundColor: darkMode ? "#0d1117" : "#ffffff",
+              color: darkMode ? "#e6edf3" : "#24292f",
+              border: darkMode ? "1px solid #30363d" : "1px solid #e1e4e8"
+            }}>
+              {beautifiedJson}
+            </pre>
+          </div>
+        )}
+      </div>
+
       <div style={{ marginTop: "30px" }}>
         <label
           htmlFor="colorPicker"
@@ -266,6 +510,11 @@ const styles = {
     marginBottom: "10px",
     textAlign: "center",
   },
+  sectionHeading: {
+    fontSize: "18px",
+    marginBottom: "15px",
+    color: "#2B77BD",
+  },
   textarea: {
     width: "100%",
     height: "100px",
@@ -273,6 +522,7 @@ const styles = {
     fontSize: "16px",
     borderRadius: "6px",
     resize: "vertical",
+    fontFamily: "monospace",
   },
   buttonContainer: {
     marginTop: "10px",
@@ -296,6 +546,39 @@ const styles = {
     borderRadius: "6px",
     cursor: "pointer",
   },
+  validateBtn: {
+    backgroundColor: "#2196F3",
+    color: "white",
+    border: "none",
+    padding: "10px 15px",
+    borderRadius: "6px",
+    cursor: "pointer",
+  },
+  beautifyBtn: {
+    backgroundColor: "#FF9800",
+    color: "white",
+    border: "none",
+    padding: "10px 15px",
+    borderRadius: "6px",
+    cursor: "pointer",
+  },
+  clearJsonBtn: {
+    backgroundColor: "#f44336",
+    color: "white",
+    border: "none",
+    padding: "10px 15px",
+    borderRadius: "6px",
+    cursor: "pointer",
+  },
+  copyBtn: {
+    backgroundColor: "#4CAF50",
+    color: "white",
+    border: "none",
+    padding: "8px 12px",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "14px",
+  },
   toggleBtn: {
     border: "none",
     padding: "10px 15px",
@@ -306,6 +589,34 @@ const styles = {
     marginTop: "20px",
     padding: "10px",
     borderRadius: "6px",
+  },
+  jsonSection: {
+    marginTop: "30px",
+    padding: "20px",
+    borderRadius: "8px",
+  },
+  validationResult: {
+    marginTop: "15px",
+    padding: "12px",
+    borderRadius: "6px",
+    fontWeight: "bold",
+    fontSize: "14px",
+  },
+  beautifiedHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "10px",
+  },
+  beautifiedJson: {
+    padding: "15px",
+    borderRadius: "6px",
+    fontSize: "14px",
+    fontFamily: "Consolas, Monaco, 'Courier New', monospace",
+    overflow: "auto",
+    maxHeight: "400px",
+    whiteSpace: "pre-wrap",
+    wordWrap: "break-word",
   },
   warning: {
     color: "#cc3300",

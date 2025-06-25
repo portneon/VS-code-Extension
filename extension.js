@@ -78,7 +78,7 @@ function getNonce() {
   return text;
 }
 
-function deactivate() {}
+function deactivate() { }
 
 module.exports = {
   activate,
