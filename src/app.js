@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import StackOverflow from "./components/StackOverflow.jsx";
 
 const translations = {
   english: {
@@ -495,6 +496,7 @@ const App = () => {
           📋 Copy {colorFormat.toUpperCase()}
         </button>
       </div>
+      <StackOverflow />
     </div>
   );
 };
