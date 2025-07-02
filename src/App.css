@@ -14,7 +14,7 @@ body {
 /* App Container */
 .app-container {
     min-height: 100vh;
-    /* background: linear-gradient(180deg, #1C0426 3%, #8A43C0 49%, #1C0426 100%); */
+    background: linear-gradient(180deg, #1C0426 4%, #8A43C0 49%, #1C0426 100%);
     transition: all 0.3s ease;
 }
 
