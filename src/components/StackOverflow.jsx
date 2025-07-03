@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from "react";
 
-const StackOverflow = () => {
-  const [query, setQuery] = useState("");
+const StackOverflow = ({ query: initialQuery = "" }) => {
+  const [query, setQuery] = useState(initialQuery);
   const [suggestions, setSuggestions] = useState([]);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [currentAnswerIndex, setCurrentAnswerIndex] = useState(0);
 
+  // Fetch suggestions when query changes
   useEffect(() => {
     const fetchSuggestions = async () => {
-      if (query.length < 3) return setSuggestions([]);
+      if (query.trim().length < 3) {
+        setSuggestions([]);
+        return;
+      }
+
       try {
         const res = await fetch(
           `https://api.stackexchange.com/2.3/search?order=desc&sort=relevance&intitle=${encodeURIComponent(
@@ -19,43 +24,51 @@ const StackOverflow = () => {
         const data = await res.json();
         setSuggestions(data.items);
       } catch (err) {
-        console.error("Error fetching suggestions:", err);
+        console.error("Error fetching StackOverflow suggestions:", err);
       }
     };
-    const timer = setTimeout(fetchSuggestions, 400);
-    return () => clearTimeout(timer);
+
+    const debounceTimer = setTimeout(fetchSuggestions, 400);
+    return () => clearTimeout(debounceTimer);
   }, [query]);
 
-  const handleSelectQuestion = async (q) => {
-    setQuery("");
-    setSuggestions([]);
+  // Set initial query from prop
+  useEffect(() => {
+    if (initialQuery) {
+      setQuery(initialQuery);
+    }
+  }, [initialQuery]);
+
+  const handleSelectQuestion = async (question) => {
     setSelectedQuestion(null);
     setAnswers([]);
     setCurrentAnswerIndex(0);
+    setSuggestions([]);
+
     try {
       const [qRes, aRes] = await Promise.all([
         fetch(
-          `https://api.stackexchange.com/2.3/questions/${q.question_id}?order=desc&sort=activity&site=stackoverflow&filter=withbody`
+          `https://api.stackexchange.com/2.3/questions/${question.question_id}?order=desc&sort=activity&site=stackoverflow&filter=withbody`
         ),
         fetch(
-          `https://api.stackexchange.com/2.3/questions/${q.question_id}/answers?order=desc&sort=votes&site=stackoverflow&filter=withbody&pagesize=10`
+          `https://api.stackexchange.com/2.3/questions/${question.question_id}/answers?order=desc&sort=votes&site=stackoverflow&filter=withbody&pagesize=10`
         ),
       ]);
+
       const qData = await qRes.json();
       const aData = await aRes.json();
+
       setSelectedQuestion(qData.items[0]);
       setAnswers(aData.items);
     } catch (err) {
-      console.error("Error loading data:", err);
+      console.error("Error fetching StackOverflow data:", err);
     }
   };
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.heading}>
-        <span style={{ color: "#f48024", marginRight: 8 }}>⬆️</span>{" "}
-        StackOverflow Search
-      </h2>
+      <h2 style={styles.heading}>⬆️ StackOverflow Search</h2>
+
       <div style={styles.searchBoxWrapper}>
         <input
           type="text"
@@ -75,18 +88,14 @@ const StackOverflow = () => {
               style={styles.suggestionItem}
               onClick={() => handleSelectQuestion(s)}
             >
-              <span style={{ fontWeight: 500, color: "black" }}>{s.title}</span>
+              <strong>{s.title}</strong>
               <div style={styles.suggestionMeta}>
                 <span style={styles.suggestionScore}>⬆️ {s.score}</span>
-                {s.tags && (
-                  <span style={styles.suggestionTags}>
-                    {s.tags.slice(0, 3).map((tag) => (
-                      <span key={tag} style={styles.tag}>
-                        {tag}
-                      </span>
-                    ))}
-                  </span>
-                )}
+                <div style={styles.suggestionTags}>
+                  {s.tags?.slice(0, 3).map((tag) => (
+                    <span key={tag} style={styles.tag}>{tag}</span>
+                  ))}
+                </div>
               </div>
             </div>
           ))}
@@ -100,22 +109,14 @@ const StackOverflow = () => {
             <span style={styles.questionScore}>
               ⬆️ {selectedQuestion.score} votes
             </span>
-            {selectedQuestion.tags && (
-              <span style={styles.suggestionTags}>
-                {selectedQuestion.tags.map((tag) => (
-                  <span key={tag} style={styles.tag}>
-                    {tag}
-                  </span>
-                ))}
-              </span>
-            )}
+            <div style={styles.suggestionTags}>
+              {selectedQuestion.tags?.map((tag) => (
+                <span key={tag} style={styles.tag}>{tag}</span>
+              ))}
+            </div>
             {selectedQuestion.owner && (
               <span style={styles.owner}>
-                <img
-                  src={selectedQuestion.owner.profile_image}
-                  alt="user"
-                  style={styles.avatar}
-                />
+                <img src={selectedQuestion.owner.profile_image} alt="user" style={styles.avatar} />
                 {selectedQuestion.owner.display_name}
               </span>
             )}
@@ -131,7 +132,7 @@ const StackOverflow = () => {
         <div style={styles.carousel}>
           <div style={styles.carouselHeader}>
             <button
-              onClick={() => setCurrentAnswerIndex((i) => Math.max(0, i - 1))}
+              onClick={() => setCurrentAnswerIndex(i => Math.max(0, i - 1))}
               disabled={currentAnswerIndex === 0}
               style={styles.carouselBtn}
             >
@@ -142,9 +143,7 @@ const StackOverflow = () => {
             </span>
             <button
               onClick={() =>
-                setCurrentAnswerIndex((i) =>
-                  Math.min(answers.length - 1, i + 1)
-                )
+                setCurrentAnswerIndex(i => Math.min(answers.length - 1, i + 1))
               }
               disabled={currentAnswerIndex === answers.length - 1}
               style={styles.carouselBtn}
@@ -152,6 +151,7 @@ const StackOverflow = () => {
               ➡️
             </button>
           </div>
+
           <div
             style={{
               ...styles.answerCard,
@@ -160,7 +160,7 @@ const StackOverflow = () => {
                 : "#f9f9f9",
               border: answers[currentAnswerIndex].is_accepted
                 ? "2px solid #4caf50"
-                : "1px solid #ddd",
+                : "1px solid #ccc",
             }}
           >
             <div style={styles.answerHeader}>
@@ -172,7 +172,7 @@ const StackOverflow = () => {
                 <span style={{ color: "#888" }}>Answer</span>
               )}
               <span style={styles.answerScore}>
-                &nbsp;⬆️ {answers[currentAnswerIndex].score} votes
+                ⬆️ {answers[currentAnswerIndex].score}
               </span>
               {answers[currentAnswerIndex].owner && (
                 <span style={styles.owner}>
@@ -209,21 +209,19 @@ const StackOverflow = () => {
 
 const styles = {
   container: {
-    fontFamily: "'Segoe UI', 'Roboto', 'Arial', sans-serif",
+    fontFamily: "Segoe UI, sans-serif",
     padding: 24,
     maxWidth: 800,
     margin: "32px auto",
     background: "#fff",
-    borderRadius: 16,
-    boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+    borderRadius: 12,
+    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
   },
   heading: {
     textAlign: "center",
-    marginBottom: 18,
-    fontSize: 26,
-    fontWeight: 700,
-    letterSpacing: 0.5,
-    color: "#222",
+    fontSize: 24,
+    fontWeight: 600,
+    marginBottom: 16,
   },
   searchBoxWrapper: {
     position: "relative",
@@ -236,9 +234,7 @@ const styles = {
     borderRadius: 8,
     border: "1.5px solid #f48024",
     outline: "none",
-    boxSizing: "border-box",
     background: "#f9f9f9",
-    transition: "border 0.2s",
   },
   searchIcon: {
     position: "absolute",
@@ -247,28 +243,23 @@ const styles = {
     transform: "translateY(-50%)",
     fontSize: 20,
     color: "#f48024",
-    pointerEvents: "none",
   },
   suggestions: {
-    border: "1.5px solid #f48024",
-    borderRadius: 8,
-    marginTop: 2,
-    background: "#fff",
-    maxHeight: 260,
-    overflowY: "auto",
-    boxShadow: "0 2px 12px rgba(244,128,36,0.08)",
-    zIndex: 10,
     position: "absolute",
     width: "100%",
+    zIndex: 10,
+    background: "#fff",
+    border: "1.5px solid #f48024",
+    borderRadius: 8,
+    maxHeight: 240,
+    overflowY: "auto",
   },
   suggestionItem: {
-    padding: "12px 10px 8px 10px",
+    padding: "10px",
     cursor: "pointer",
-    borderBottom: "1px solid #f3f3f3",
-    fontSize: 15,
+    borderBottom: "1px solid #eee",
     background: "#fff",
-    transition: "background 0.15s",
-    position: "relative",
+    transition: "background 0.2s",
   },
   suggestionMeta: {
     display: "flex",
@@ -282,36 +273,30 @@ const styles = {
     fontSize: 13,
   },
   suggestionTags: {
-    marginLeft: 8,
     display: "flex",
-    gap: 4,
+    gap: 6,
   },
   tag: {
-    background: "#f3f3f3",
-    color: "#39739d",
+    background: "#f1f1f1",
+    padding: "2px 6px",
     borderRadius: 4,
-    padding: "2px 7px",
     fontSize: 12,
-    marginRight: 2,
-    fontWeight: 500,
+    color: "#39739d",
   },
   card: {
-    marginTop: 28,
-    padding: 20,
+    marginTop: 24,
+    padding: 16,
+    border: "1px solid #ddd",
+    borderRadius: 10,
     background: "#fdf7e2",
-    border: "1.5px solid #f48024",
-    borderRadius: 12,
-    boxShadow: "0 2px 12px rgba(244,128,36,0.08)",
   },
   questionTitle: {
     fontSize: 20,
     fontWeight: 700,
     marginBottom: 8,
-    color: "#222",
   },
   questionMeta: {
     display: "flex",
-    alignItems: "center",
     gap: 12,
     marginBottom: 10,
     flexWrap: "wrap",
@@ -319,7 +304,7 @@ const styles = {
   questionScore: {
     color: "#f48024",
     fontWeight: 600,
-    fontSize: 15,
+    fontSize: 14,
   },
   owner: {
     display: "flex",
@@ -327,77 +312,59 @@ const styles = {
     gap: 6,
     fontSize: 13,
     color: "#555",
-    marginLeft: 8,
   },
   avatar: {
-    width: 22,
-    height: 22,
+    width: 20,
+    height: 20,
     borderRadius: "50%",
-    objectFit: "cover",
-    border: "1px solid #eee",
   },
   body: {
-    fontFamily: "monospace",
+    marginTop: 10,
     fontSize: 14,
     lineHeight: 1.6,
     background: "#fff",
     padding: 10,
     borderRadius: 6,
-    marginTop: 8,
-    color: "#222",
-    overflowX: "auto",
+    border: "1px solid #eee",
   },
-  carousel: { marginTop: 28 },
+  carousel: {
+    marginTop: 24,
+  },
   carouselHeader: {
     display: "flex",
     justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 10,
     gap: 16,
+    marginBottom: 12,
   },
   carouselBtn: {
+    padding: "6px 14px",
     background: "#f48024",
     color: "#fff",
     border: "none",
     borderRadius: 6,
-    padding: "6px 16px",
-    fontSize: 16,
-    cursor: "pointer",
     fontWeight: 600,
-    transition: "background 0.2s",
-    outline: "none",
-    boxShadow: "0 1px 4px rgba(244,128,36,0.08)",
-    opacity: 1,
-    disabled: {
-      opacity: 0.5,
-      cursor: "not-allowed",
-    },
+    cursor: "pointer",
   },
   carouselCount: {
+    fontSize: 14,
     fontWeight: 600,
-    fontSize: 15,
     color: "#f48024",
   },
   answerCard: {
-    padding: 18,
+    padding: 16,
     borderRadius: 10,
-    minHeight: 120,
-    boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-    marginBottom: 8,
+    boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
   },
   answerHeader: {
-    fontWeight: "bold",
-    fontSize: 15,
+    fontSize: 14,
     marginBottom: 8,
     display: "flex",
-    alignItems: "center",
     gap: 10,
-    flexWrap: "wrap",
+    alignItems: "center",
   },
   answerScore: {
     color: "#f48024",
     fontWeight: 600,
-    fontSize: 14,
   },
 };
 
