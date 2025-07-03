@@ -23,7 +23,6 @@ import { translations } from "./utils/translations.js";
 import { useNotes } from "./utils/useNotes.js";
 
 import "./App.css";
-import TreeView from "./components/TreeView.jsx";
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -323,7 +322,6 @@ const App = () => {
       <div className="hidden">
         <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
       </div>
-      <TreeView />
     </div>
   );
 };
