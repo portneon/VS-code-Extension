@@ -67,7 +67,7 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.heading}>⬆️ StackOverflow Search</h2>
+      <h2 style={styles.heading}>⬆ StackOverflow Search</h2>
 
       <div style={styles.searchBoxWrapper}>
         <input
@@ -107,7 +107,7 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
           <h3 style={styles.questionTitle}>{selectedQuestion.title}</h3>
           <div style={styles.questionMeta}>
             <span style={styles.questionScore}>
-              ⬆️ {selectedQuestion.score} votes
+              ⬆ {selectedQuestion.score} votes
             </span>
             <div style={styles.suggestionTags}>
               {selectedQuestion.tags?.map((tag) => (
@@ -136,7 +136,7 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
               disabled={currentAnswerIndex === 0}
               style={styles.carouselBtn}
             >
-              ⬅️
+              ⬅
             </button>
             <span style={styles.carouselCount}>
               {currentAnswerIndex + 1} / {answers.length}
@@ -166,13 +166,13 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
             <div style={styles.answerHeader}>
               {answers[currentAnswerIndex].is_accepted ? (
                 <span style={{ color: "#4caf50", fontWeight: 700 }}>
-                  ✅ Accepted Answer
+                  Accepted Answer
                 </span>
               ) : (
                 <span style={{ color: "#888" }}>Answer</span>
               )}
               <span style={styles.answerScore}>
-                ⬆️ {answers[currentAnswerIndex].score}
+                 {answers[currentAnswerIndex].score}
               </span>
               {answers[currentAnswerIndex].owner && (
                 <span style={styles.owner}>
@@ -213,7 +213,7 @@ const styles = {
     padding: 24,
     maxWidth: 800,
     margin: "32px auto",
-    background: "#fff",
+    // background: "#fff",
     borderRadius: 12,
     boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
   },
@@ -235,6 +235,7 @@ const styles = {
     border: "1.5px solid #f48024",
     outline: "none",
     background: "#f9f9f9",
+    color: "white"
   },
   searchIcon: {
     position: "absolute",
