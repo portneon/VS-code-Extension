@@ -121,14 +121,14 @@ const App = () => {
       </div>
 
       {/* Dev Tips Section */}
-      {/* <div className="dev-tips-section">
+      <div className="dev-tips-section">
         <h2 className="section-title">Dev tips</h2>
         <div className="dev-tips-container">
           <div className="dev-tip-content">
             <p>"Use meaningful variable names to <span className="highlight">improve code readability</span>, e.g., `userCount` instead of `x`."</p>
           </div>
         </div>
-      </div> */}
+      </div>
     </div>
   );
 
