@@ -96,13 +96,16 @@ const App = () => {
   };
 
   const highlightTriggerWords = (text) => {
-    const triggerPattern = /@(\w+)/g;
-    const escaped = text
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-    return escaped.replace(triggerPattern, (match) => {
-      return `<span class="highlighted-trigger">${match}</span>`;
+    const parts = text.split(/(@\w+)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith("@")) {
+        return (
+          <span key={index} className="highlighted-trigger">
+            {part}
+          </span>
+        );
+      }
+      return part;
     });
   };
 
@@ -185,8 +188,8 @@ const App = () => {
         <div className="dev-tips-container">
           <div className="dev-tip-content">
             <p>
-              "Use meaningful variable names to {" "}
-              <span className="highlight">improve code readability</span>, e.g., {" "}
+              "Use meaningful variable names to{" "}
+              <span className="highlight">improve code readability</span>, e.g.,{" "}
               <code>userCount</code> instead of <code>x</code>."
             </p>
           </div>
@@ -275,12 +278,9 @@ const App = () => {
         {activeView === "dashboard" && (
           <div className="search-wrapper">
             <Search className="search-icon" />
-            <div
-              className="search-highlight"
-              dangerouslySetInnerHTML={{
-                __html: highlightTriggerWords(searchQuery),
-              }}
-            />
+            <div className="search-highlight">
+              {highlightTriggerWords(searchQuery)}
+            </div>
             <textarea
               className="search-real-input"
               value={searchQuery}
@@ -291,11 +291,7 @@ const App = () => {
             />
             {showSuggestions && (
               <ul className="trigger-suggestions">
-                {[
-                  "@stack",
-                  "@json",
-                  "@notes"
-                ].map((trigger) => (
+                {["@stack", "@json", "@notes"].map((trigger) => (
                   <li
                     key={trigger}
                     onClick={() => handleSuggestionClick(trigger)}
