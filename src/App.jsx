@@ -1,119 +1,253 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from 'react';
+import { Search, Palette, Globe, Moon, Sun, StickyNote, FileText, ExternalLink, Star, Languages } from 'lucide-react';
 
-import LanguageSelector from "./components/LanguageSelector";
-import DevTip from "./components/DevTip";
-import NoteTaker from "./components/NoteTaker";
-import SavedNotes from "./components/SavedNotes";
-import JsonValidator from "./components/JsonValidator";
-import ColorPicker from "./components/ColorPicker";
-import StackOverflow from "./components/StackOverflow";
-import ThemeToggle from "./components/ThemeToggle";
+import LanguageSelector from './components/LanguageSelector';
+import DevTip from './components/DevTip';
+import NoteTaker from './components/NoteTaker';
+import SavedNotes from './components/SavedNotes';
+import JsonValidator from './components/JsonValidator';
+import ColorPicker from './components/ColorPicker';
+import StackOverflow from './components/StackOverflow';
+import ThemeToggle from './components/ThemeToggle';
+import InternetCheck from './components/ConnectionStatus';
 
 import { translations } from "./utils/translations.js";
-import { showMessage } from "./utils/helpers.js";
-import { useLocalStorage } from "./utils/useLocalStorage.js";
-import InternetCheck from "./components/ConnectionStatus.jsx";
+import { useNotes } from "./utils/useNotes.js";
+
+import './App.css';
 
 const App = () => {
-  const [note, setNote] = useState("");
-  const [savedNotes, setSavedNotes] = useLocalStorage("my-vscode-notes", []);
-  const [warning, setWarning] = useState("");
   const [darkMode, setDarkMode] = useState(false);
   const [language, setLanguage] = useState("english");
 
-  const handleSave = () => {
-    if (note.trim() === "") {
-      setWarning("Cannot save an empty note!");
-      return;
+  const [activeView, setActiveView] = useState('dashboard');
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const {
+    note,
+    setNote,
+    savedNotes,
+    warning,
+    handleSave,
+    handleClear,
+    togglePin,
+  } = useNotes();
+
+  const commonProps = { darkMode, language, translations };
+
+  const handleToolClick = (tool) => {
+    setActiveView(tool);
+  };
+
+  const renderActiveView = () => {
+    switch (activeView) {
+      case 'notes':
+        return (
+          <div className="space-y">
+            <div className="tool-container">
+              <NoteTaker
+                note={note}
+                setNote={setNote}
+                onSave={handleSave}
+                onClear={handleClear}
+                warning={warning}
+                {...commonProps}
+              />
+            </div>
+            <div className="tool-container">
+              <SavedNotes
+                savedNotes={savedNotes}
+                onTogglePin={togglePin}
+                {...commonProps}
+              />
+            </div>
+          </div>
+        );
+      case 'json-validator':
+        return (
+          <div className="tool-container">
+            <JsonValidator {...commonProps} />
+          </div>
+        );
+      case 'stackoverflow':
+        return (
+          <div className="tool-container">
+            <StackOverflow />
+          </div>
+        );
+      default:
+        return renderDashboard();
     }
-    const newNote = {
-      id: Date.now(),
-      content: note,
-      pinned: false,
-    };
-    setSavedNotes((prev) => {
-      const pinned = prev.filter((n) => n.pinned);
-      const unpinned = prev.filter((n) => !n.pinned);
-      return [...pinned, newNote, ...unpinned];
-    });
-    setNote("");
-    setWarning("");
-    showMessage("✅ Note Saved!");
   };
 
-  const handleClear = () => {
-    setSavedNotes([]);
-    setWarning("");
-  };
+  const renderDashboard = () => (
+    <div className="dashboard-content">
+      {/* Main Tools Grid */}
+      <div className="tools-grid">
+        {/* Notes Tool */}
+        <div
+          onClick={() => handleToolClick('notes')}
+          className="tool-card"
+        >
+          <div className="tool-card-content">
+            <StickyNote className="tool-icon" />
+            <h3 className="tool-title">notes</h3>
+          </div>
+        </div>
 
-  const togglePin = (id) => {
-    setSavedNotes((prev) =>
-      prev
-        .map((n) => (n.id === id ? { ...n, pinned: !n.pinned } : n))
-        .sort((a, b) => b.pinned - a.pinned || b.id - a.id)
-    );
-  };
+        {/* JSON Validator Tool */}
+        <div
+          onClick={() => handleToolClick('json-validator')}
+          className="tool-card featured"
+        >
+          <div className="tool-card-content">
+            <FileText className="tool-icon" />
+            <h3 className="tool-title">JSON Validator</h3>
+          </div>
+        </div>
 
-  const containerStyle = {
-    fontFamily: "sans-serif",
-    padding: "20px",
-    minHeight: "100vh",
-    backgroundColor: darkMode ? "#121212" : "#f5f5f5",
-    color: darkMode ? "#ffffff" : "#000000",
-  };
+        {/* Stack Overflow Search Tool */}
+        <div
+          onClick={() => handleToolClick('stackoverflow')}
+          className="tool-card"
+        >
+          <div className="tool-card-content">
+            <ExternalLink className="tool-icon" />
+            <h3 className="tool-title">Stack Overflow</h3>
+          </div>
+        </div>
+      </div>
 
-  const headingStyle = {
-    fontSize: "24px",
-    marginBottom: "10px",
-    textAlign: "center",
-  };
+      {/* Dev Tips Section */}
+      <div className="dev-tips-section">
+        <h2 className="section-title">Dev tips</h2>
+        <div className="dev-tips-container">
+          <div className="dev-tip-content">
+            <p>"Use meaningful variable names to <span className="highlight">improve code readability</span>, e.g., `userCount` instead of `x`."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div style={containerStyle}>
-      <h2 style={headingStyle}>📝 {translations[language].title}</h2>
+    <div className={`app-container ${darkMode ? 'dark-mode' : ''}`}>
+      {/* Header */}
+      <div className="app-content">
+        <div className="header">
+          <div className="header-left">
+            <div className="logo-text">LOGO</div>
+            <h1 className="app-title">
+              {translations[language]?.title || 'StackMate'}
+            </h1>
+          </div>
 
-      <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
+          {/* Header Controls */}
+          <div className="header-controls">
+            {/* Internet Connection Status */}
+            <InternetCheck darkMode={darkMode} />
 
-      <InternetCheck darkMode={darkMode} />
+            {/* Color Picker */}
+            <div className="control-wrapper">
+              <button
+                onClick={() => setShowColorPicker(!showColorPicker)}
+                className="control-button color-picker-button"
+              />
+              {showColorPicker && (
+                <div className="popup-overlay">
+                  <div className="popup-container">
+                    <button
+                      onClick={() => setShowColorPicker(false)}
+                      className="close-button"
+                    >
+                      ×
+                    </button>
+                    <ColorPicker />
+                  </div>
+                </div>
+              )}
+            </div>
 
-      <LanguageSelector
-        language={language}
-        setLanguage={setLanguage}
-        translations={translations}
-      />
+            {/* Language Selector */}
+            <div className="control-wrapper">
+              <button
+                onClick={() => setShowLanguageSelector(!showLanguageSelector)}
+                className="control-button language-button"
+              >
+                <Languages className="control-icon" />
+              </button>
+              {showLanguageSelector && (
+                <div className="popup-overlay">
+                  <div className="popup-container">
+                    <button
+                      onClick={() => setShowLanguageSelector(false)}
+                      className="close-button"
+                    >
+                      ×
+                    </button>
+                    <LanguageSelector
+                      language={language}
+                      setLanguage={setLanguage}
+                      translations={translations}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
 
-      <DevTip />
+            {/* Theme Toggle */}
+            <div className="control-wrapper">
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className="control-button theme-button"
+              >
+                {darkMode ? (
+                  <Sun className="control-icon sun-icon" />
+                ) : (
+                  <Moon className="control-icon moon-icon" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
 
-      <NoteTaker
-        note={note}
-        setNote={setNote}
-        onSave={handleSave}
-        onClear={handleClear}
-        warning={warning}
-        darkMode={darkMode}
-        language={language}
-        translations={translations}
-      />
+        {/* Search Bar */}
+        {/* {activeView === 'dashboard' && (
+          <div className="search-container">
+            <Search className="search-icon" />
+            <input
+              type="text"
+              placeholder={translations[language]?.search || "Search..."}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input"
+            />
+          </div>
+        )} */}
 
-      <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
+        {/* Back Button for non-dashboard views */}
+        {/* {activeView !== 'dashboard' && (
+          <button
+            onClick={() => setActiveView('dashboard')}
+            className="back-button"
+          >
+            <span>←</span>
+            <span>Back to Dashboard</span>
+          </button>
+        )} */}
 
-      <SavedNotes
-        savedNotes={savedNotes}
-        onTogglePin={togglePin}
-        darkMode={darkMode}
-        language={language}
-        translations={translations}
-      />
+        {/* Main Content */}
+        {/* <div className="main-content">
+          {renderActiveView()}
+        </div> */}
+      </div>
 
-      <JsonValidator
-        darkMode={darkMode}
-        language={language}
-        translations={translations}
-      />
 
-      <ColorPicker />
-
-      <StackOverflow />
+      {/* <div className="hidden">
+        <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
+      </div> */}
     </div>
   );
 };

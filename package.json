@@ -6,36 +6,35 @@
   "engines": {
     "vscode": "^1.80.0"
   },
- "activationEvents": [
-  "onCommand:extension.showReactWebview",
-  "onCommand:extension.searchStackOverflow"
-],
-"main": "extension.js",
-"contributes": {
-  "commands": [
-    {
-      "command": "extension.showReactWebview",
-      "title": "Show React Webview"
-    },
-    {
-      "command": "extension.searchStackOverflow",
-      "title": "Search Stack Overflow"
-    }
+  "activationEvents": [
+    "onCommand:extension.showReactWebview",
+    "onCommand:extension.searchStackOverflow"
   ],
-  "keybindings": [
-    {
-      "command": "extension.searchStackOverflow",
-      "key": "ctrl+0",
-      "when": "editorTextFocus"
-    },
-    {
-      "command": "extension.searchStackOverflow",
-      "key": "cmd+0",
-      "when": "editorTextFocus"
-    }
-  ]
-},
-
+  "main": "extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.showReactWebview",
+        "title": "Show React Webview"
+      },
+      {
+        "command": "extension.searchStackOverflow",
+        "title": "Search Stack Overflow"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.searchStackOverflow",
+        "key": "ctrl+0",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.searchStackOverflow",
+        "key": "cmd+0",
+        "when": "editorTextFocus"
+      }
+    ]
+  },
   "scripts": {
     "start": "webpack serve --mode development",
     "build": "webpack",
@@ -46,48 +45,19 @@
   ],
   "dependencies": {
     "jspdf": "^3.0.1",
+    "lucide-react": "^0.525.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.27.4",
+    "@babel/core": "^7.27.7",
     "@babel/preset-env": "^7.27.2",
     "@babel/preset-react": "^7.27.1",
     "babel-loader": "^10.0.0",
+    "css-loader": "^7.1.2",
+    "style-loader": "^4.0.0",
     "webpack": "^5.99.9",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.2"
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
