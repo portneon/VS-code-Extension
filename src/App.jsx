@@ -1,29 +1,39 @@
-import React, { useState } from 'react';
-import { Search, Palette, Globe, Moon, Sun, StickyNote, FileText, ExternalLink, Star, Languages } from 'lucide-react';
+import React, { useState } from "react";
+import {
+  Search,
+  StickyNote,
+  FileText,
+  ExternalLink,
+  Sun,
+  Moon,
+  Languages,
+} from "lucide-react";
 
-import LanguageSelector from './components/LanguageSelector';
-import DevTip from './components/DevTip';
-import NoteTaker from './components/NoteTaker';
-import SavedNotes from './components/SavedNotes';
-import JsonValidator from './components/JsonValidator';
-import ColorPicker from './components/ColorPicker';
-import StackOverflow from './components/StackOverflow';
-import ThemeToggle from './components/ThemeToggle';
-import InternetCheck from './components/ConnectionStatus';
+import LanguageSelector from "./components/LanguageSelector";
+import DevTip from "./components/DevTip";
+import NoteTaker from "./components/NoteTaker";
+import SavedNotes from "./components/SavedNotes";
+import JsonValidator from "./components/JsonValidator";
+import ColorPicker from "./components/ColorPicker";
+import StackOverflow from "./components/StackOverflow";
+import ThemeToggle from "./components/ThemeToggle";
+import InternetCheck from "./components/ConnectionStatus";
 
 import { translations } from "./utils/translations.js";
 import { useNotes } from "./utils/useNotes.js";
 
-import './App.css';
+import "./App.css";
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [language, setLanguage] = useState("english");
-
-  const [activeView, setActiveView] = useState('dashboard');
+  const [activeView, setActiveView] = useState("dashboard");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [triggerType, setTriggerType] = useState(null);
+  const [queryText, setQueryText] = useState("");
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const {
     note,
@@ -37,13 +47,75 @@ const App = () => {
 
   const commonProps = { darkMode, language, translations };
 
+  const parseTrigger = (input) => {
+    const match = input.match(/^@(\w+)\s+(.*)$/);
+    if (match) {
+      return {
+        trigger: match[1].toLowerCase(),
+        query: match[2],
+      };
+    }
+    return { trigger: null, query: "" };
+  };
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    const { trigger, query } = parseTrigger(value);
+    setTriggerType(trigger);
+    setQueryText(query);
+    setShowSuggestions(value.startsWith("@") && !trigger);
+  };
+
+  const handleSuggestionClick = (trigger) => {
+    setSearchQuery(`${trigger} `);
+    setShowSuggestions(false);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      setShowSuggestions(false);
+      if (triggerType) {
+        switch (triggerType) {
+          case "stack":
+            setActiveView("stackoverflow");
+            break;
+          case "json":
+            setActiveView("json-validator");
+            break;
+          case "notes":
+            setActiveView("notes");
+            break;
+          default:
+            setActiveView("notes");
+            break;
+        }
+      }
+    }
+  };
+
+  const highlightTriggerWords = (text) => {
+    const parts = text.split(/(@\w+)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith("@")) {
+        return (
+          <span key={index} className="highlighted-trigger">
+            {part}
+          </span>
+        );
+      }
+      return part;
+    });
+  };
+
   const handleToolClick = (tool) => {
     setActiveView(tool);
   };
 
   const renderActiveView = () => {
     switch (activeView) {
-      case 'notes':
+      case "notes":
         return (
           <div className="space-y">
             <div className="tool-container">
@@ -65,16 +137,16 @@ const App = () => {
             </div>
           </div>
         );
-      case 'json-validator':
+      case "json-validator":
         return (
           <div className="tool-container">
-            <JsonValidator {...commonProps} />
+            <JsonValidator query={queryText} {...commonProps} />
           </div>
         );
-      case 'stackoverflow':
+      case "stackoverflow":
         return (
           <div className="tool-container">
-            <StackOverflow />
+            <StackOverflow query={searchQuery.replace(/^@stack\s*/, "")} />
           </div>
         );
       default:
@@ -84,22 +156,15 @@ const App = () => {
 
   const renderDashboard = () => (
     <div className="dashboard-content">
-      {/* Main Tools Grid */}
       <div className="tools-grid">
-        {/* Notes Tool */}
-        <div
-          onClick={() => handleToolClick('notes')}
-          className="tool-card"
-        >
+        <div onClick={() => handleToolClick("notes")} className="tool-card">
           <div className="tool-card-content">
             <StickyNote className="tool-icon" />
-            <h3 className="tool-title">notes</h3>
+            <h3 className="tool-title">Notes</h3>
           </div>
         </div>
-
-        {/* JSON Validator Tool */}
         <div
-          onClick={() => handleToolClick('json-validator')}
+          onClick={() => handleToolClick("json-validator")}
           className="tool-card featured"
         >
           <div className="tool-card-content">
@@ -107,10 +172,8 @@ const App = () => {
             <h3 className="tool-title">JSON Validator</h3>
           </div>
         </div>
-
-        {/* Stack Overflow Search Tool */}
         <div
-          onClick={() => handleToolClick('stackoverflow')}
+          onClick={() => handleToolClick("stackoverflow")}
           className="tool-card"
         >
           <div className="tool-card-content">
@@ -120,12 +183,15 @@ const App = () => {
         </div>
       </div>
 
-      {/* Dev Tips Section */}
       <div className="dev-tips-section">
-        <h2 className="section-title">Dev tips</h2>
+        <h2 className="section-title">Dev Tips</h2>
         <div className="dev-tips-container">
           <div className="dev-tip-content">
-            <p>"Use meaningful variable names to <span className="highlight">improve code readability</span>, e.g., `userCount` instead of `x`."</p>
+            <p>
+              "Use meaningful variable names to{" "}
+              <span className="highlight">improve code readability</span>, e.g.,{" "}
+              <code>userCount</code> instead of <code>x</code>."
+            </p>
           </div>
         </div>
       </div>
@@ -133,23 +199,20 @@ const App = () => {
   );
 
   return (
-    <div className={`app-container ${darkMode ? 'dark-mode' : ''}`}>
-      {/* Header */}
+    <div className={`app-container ${darkMode ? "dark-mode" : ""}`}>
       <div className="app-content">
+        {/* Header */}
         <div className="header">
           <div className="header-left">
             <div className="logo-text">LOGO</div>
             <h1 className="app-title">
-              {translations[language]?.title || 'StackMate'}
+              {translations[language]?.title || "StackMate"}
             </h1>
           </div>
 
-          {/* Header Controls */}
           <div className="header-controls">
-            {/* Internet Connection Status */}
             <InternetCheck darkMode={darkMode} />
 
-            {/* Color Picker */}
             <div className="control-wrapper">
               <button
                 onClick={() => setShowColorPicker(!showColorPicker)}
@@ -170,7 +233,6 @@ const App = () => {
               )}
             </div>
 
-            {/* Language Selector */}
             <div className="control-wrapper">
               <button
                 onClick={() => setShowLanguageSelector(!showLanguageSelector)}
@@ -197,54 +259,66 @@ const App = () => {
               )}
             </div>
 
-            {/* Theme Toggle */}
             <div className="control-wrapper">
               <button
                 onClick={() => setDarkMode(!darkMode)}
                 className="control-button theme-button"
               >
                 {darkMode ? (
-                  <Sun className="control-icon sun-icon" />
+                  <Sun className="control-icon" />
                 ) : (
-                  <Moon className="control-icon moon-icon" />
+                  <Moon className="control-icon" />
                 )}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Search Bar */}
-        {activeView === 'dashboard' && (
-          <div className="search-container">
+        {/* Search Input */}
+        {activeView === "dashboard" && (
+          <div className="search-wrapper">
             <Search className="search-icon" />
-            <input
-              type="text"
-              placeholder={translations[language]?.search || "Search..."}
+            <div className="search-highlight">
+              {highlightTriggerWords(searchQuery)}
+            </div>
+            <textarea
+              className="search-real-input"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
+              onChange={handleSearchChange}
+              onKeyDown={handleKeyDown}
+              placeholder="search with @stack @json @notes ..... "
+              rows={1}
             />
+            {showSuggestions && (
+              <ul className="trigger-suggestions">
+                {["@stack", "@json", "@notes"].map((trigger) => (
+                  <li
+                    key={trigger}
+                    onClick={() => handleSuggestionClick(trigger)}
+                  >
+                    {trigger}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
 
-        {/* Back Button for non-dashboard views */}
-        {activeView !== 'dashboard' && (
+        {/* Back Button */}
+        {activeView !== "dashboard" && (
           <button
-            onClick={() => setActiveView('dashboard')}
+            onClick={() => setActiveView("dashboard")}
             className="back-button"
           >
-            <span>←</span>
-            <span>Back to Dashboard</span>
+            ← Back to Dashboard
           </button>
         )}
 
         {/* Main Content */}
-        <div className="main-content">
-          {renderActiveView()}
-        </div>
+        <div className="main-content">{renderActiveView()}</div>
       </div>
 
-
+      {/* Hidden toggle */}
       <div className="hidden">
         <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
       </div>
