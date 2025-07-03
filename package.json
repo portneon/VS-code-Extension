@@ -7,9 +7,10 @@
     "vscode": "^1.80.0"
   },
   "activationEvents": [
-    "onCommand:extension.showReactWebview",
-    "onCommand:extension.searchStackOverflow"
-  ],
+  "onCommand:extension.showReactWebview",
+  "onCommand:extension.searchStackOverflow",
+  "onCommand:extension.showTreeInTerminal"
+],
   "main": "extension.js",
   "contributes": {
     "commands": [
@@ -20,6 +21,10 @@
       {
         "command": "extension.searchStackOverflow",
         "title": "Search Stack Overflow"
+      },
+      {
+        "command": "extension.showTreeInTerminal",
+        "title": "Show Folder Tree in Terminal"
       }
     ],
     "keybindings": [
@@ -31,6 +36,12 @@
       {
         "command": "extension.searchStackOverflow",
         "key": "cmd+0",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "extension.showTreeInTerminal",
+        "key": "ctrl+alt+t",
+        "mac": "cmd+alt+t",
         "when": "editorTextFocus"
       }
     ]

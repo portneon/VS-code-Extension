@@ -1,120 +1,163 @@
 const vscode = require("vscode");
 const path = require("path");
+const fs = require("fs");
 const https = require("https");
 
+const EXCLUDED_NAMES = [
+  "node_modules", ".git", ".DS_Store", "package-lock.json", "yarn.lock",
+  "dist", ".vscode", ".idea", ".env"
+];
+
 function activate(context) {
-  // Show React Webview Command
-  let showWebviewCommand = vscode.commands.registerCommand(
-    "extension.showReactWebview",
-    function () {
-      const panel = vscode.window.createWebviewPanel(
-        "reactWebview",
-        "React Webview",
-        vscode.ViewColumn.One,
-        {
-          enableScripts: true,
-          localResourceRoots: [vscode.Uri.file(path.join(__dirname, "dist"))],
-          retainContextWhenHidden: true,
-        }
-      );
+  const baseFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+  if (!baseFolder) {
+    vscode.window.showErrorMessage("No workspace folder found.");
+    return;
+  }
 
-      panel.webview.html = getWebviewContent(panel);
+  let activeFolder = baseFolder;
 
-      panel.webview.onDidReceiveMessage(
-        (message) => {
-          if (message.command === "alert") {
-            vscode.window.showInformationMessage(message.text);
-          }
-        },
-        undefined,
-        context.subscriptions
-      );
-    }
-  );
-
-  // Stack Overflow Hover Command
-  let stackOverflowCommand = vscode.commands.registerCommand(
-    "extension.searchStackOverflow",
-    () => {
-      const editor = vscode.window.activeTextEditor;
-      if (!editor) return;
-
-      const selection = editor.selection;
-      const selectedText = editor.document.getText(selection).trim();
-
-      if (!selectedText) {
-        vscode.window.showInformationMessage("Please select some code to search.");
-        return;
+  const showWebviewCommand = vscode.commands.registerCommand("extension.showReactWebview", async () => {
+    const panel = vscode.window.createWebviewPanel(
+      "reactWebview",
+      "Code Companion",
+      vscode.ViewColumn.One,
+      {
+        enableScripts: true,
+        localResourceRoots: [vscode.Uri.file(path.join(__dirname, "dist"))],
+        retainContextWhenHidden: true,
       }
+    );
 
-      const query = encodeURIComponent(selectedText);
-      const options = {
-        hostname: "api.stackexchange.com",
-        path: `/2.3/search/advanced?order=desc&sort=relevance&q=${query}&site=stackoverflow`,
-        headers: {
-          "User-Agent": "vscode-extension"
+    panel.webview.html = getWebviewContent(panel);
+
+    const sendTree = () => {
+      const tree = getFolderTree(baseFolder, activeFolder);
+      const activeFilePath = vscode.window.activeTextEditor?.document.uri.fsPath;
+      const relativeToActive = activeFilePath ? path.relative(activeFolder, activeFilePath) : "";
+      panel.webview.postMessage({ type: "treeData", tree, activePath: relativeToActive });
+    };
+    
+
+    // Delay initial send to ensure React is mounted... ye dikkat tha pahle issliye add kiya hai
+    setTimeout(() => sendTree(), 500);
+
+    const watcher = fs.watch(baseFolder, { recursive: true }, () => sendTree());
+    panel.onDidDispose(() => watcher.close());
+
+    vscode.window.onDidChangeActiveTextEditor((editor) => {
+      if (editor) {
+        const filePath = editor.document.uri.fsPath;
+        const folder = path.dirname(filePath);
+        activeFolder = folder;
+        sendTree();
+      }
+    });
+
+    panel.webview.onDidReceiveMessage(
+      (message) => {
+        if (message.command === "alert") {
+          vscode.window.showInformationMessage(message.text);
         }
-      };
+      },
+      undefined,
+      context.subscriptions
+    );
+  });
 
-      https.get(options, (res) => {
-        let data = "";
+  const stackOverflowCommand = vscode.commands.registerCommand("extension.searchStackOverflow", () => {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
 
-        res.on("data", (chunk) => {
-          data += chunk;
-        });
+    const selection = editor.selection;
+    const selectedText = editor.document.getText(selection).trim();
 
-        res.on("end", () => {
-          try {
-            const parsed = JSON.parse(data);
-
-            if (parsed.error_message) {
-              vscode.window.showErrorMessage(
-                `Stack Overflow API Error: ${parsed.error_message}`
-              );
-              return;
-            }
-
-            if (!Array.isArray(parsed.items) || parsed.items.length === 0) {
-              vscode.window.showInformationMessage("No results found on Stack Overflow.");
-              return;
-            }
-
-            const topResults = parsed.items.slice(0, 3);
-            const markdown = new vscode.MarkdownString(
-              topResults
-                .map((item, idx) => `**${idx + 1}. [${item.title}](${item.link})**`)
-                .join("\n\n")
-            );
-            markdown.isTrusted = true;
-
-            const hover = new vscode.Hover(markdown);
-
-            const provider = {
-              provideHover() {
-                return hover;
-              },
-            };
-
-            const disposableHover = vscode.languages.registerHoverProvider("*", provider);
-            context.subscriptions.push(disposableHover);
-
-            vscode.window.showInformationMessage(
-              " Hover over the selected code to see Stack Overflow results."
-            );
-          } catch (err) {
-            vscode.window.showErrorMessage(" Error parsing Stack Overflow response.");
-            console.error("Raw Response:", data);
-            console.error(err);
-          }
-        });
-      }).on("error", (err) => {
-        vscode.window.showErrorMessage(" HTTPS request failed.");
-        console.error(err);
-      });
+    if (!selectedText) {
+      vscode.window.showInformationMessage("Please select some code to search.");
+      return;
     }
-  );
+
+    const query = encodeURIComponent(selectedText);
+    const options = {
+      hostname: "api.stackexchange.com",
+      path: `/2.3/search/advanced?order=desc&sort=relevance&q=${query}&site=stackoverflow`,
+      headers: { "User-Agent": "vscode-extension" }
+    };
+
+    https.get(options, (res) => {
+      let data = "";
+      res.on("data", (chunk) => data += chunk);
+      res.on("end", () => {
+        try {
+          const parsed = JSON.parse(data);
+          if (!Array.isArray(parsed.items) || parsed.items.length === 0) {
+            vscode.window.showInformationMessage("No results found on Stack Overflow.");
+            return;
+          }
+
+          const topResults = parsed.items.slice(0, 3);
+          const markdown = new vscode.MarkdownString(
+            topResults.map((item, i) => `**${i + 1}. [${item.title}](${item.link})**`).join("\n\n")
+          );
+          markdown.isTrusted = true;
+
+          const hover = new vscode.Hover(markdown);
+          const provider = { provideHover() { return hover; } };
+
+          const disposableHover = vscode.languages.registerHoverProvider("*", provider);
+          context.subscriptions.push(disposableHover);
+
+          vscode.window.showInformationMessage("Hover over the selected code to see Stack Overflow results.");
+        } catch (err) {
+          vscode.window.showErrorMessage("Error parsing Stack Overflow response.");
+        }
+      });
+    }).on("error", (err) => {
+      vscode.window.showErrorMessage("HTTPS request failed.");
+    });
+  });
 
   context.subscriptions.push(showWebviewCommand, stackOverflowCommand);
+}
+
+function getFolderTree(dirPath, basePath = dirPath) {
+  const result = [];
+  let items;
+  try {
+    items = fs.readdirSync(dirPath);
+  } catch (e) {
+    return result;
+  }
+
+  items.forEach((item) => {
+    if (EXCLUDED_NAMES.includes(item)) return;
+
+    const fullPath = path.join(dirPath, item);
+    let stats;
+    try {
+      stats = fs.statSync(fullPath);
+    } catch {
+      return;
+    }
+
+    const relativePath = path.relative(basePath, fullPath);
+
+    const node = {
+      name: item,
+      path: relativePath,
+      isDirectory: stats.isDirectory(),
+      children: [],
+    };
+
+    if (stats.isDirectory()) {
+      node.children = getFolderTree(fullPath, basePath);
+      if (node.children.length === 0) return;
+    }
+
+    result.push(node);
+  });
+
+  return result;
 }
 
 function getWebviewContent(panel) {
@@ -126,20 +169,16 @@ function getWebviewContent(panel) {
     <!DOCTYPE html>
     <html lang="en">
     <head>
-      <meta charset="UTF-8" />
+      <meta charset="UTF-8">
       <meta http-equiv="Content-Security-Policy"
         content="default-src 'none'; script-src 'nonce-${nonce}'; style-src 'unsafe-inline'; img-src data: https:; connect-src *;">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>React Webview</title>
+      <title>Folder Tree</title>
       <style>
-        body {
-          margin: 0;
-          padding: 0;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-        }
-        #root {
-          height: 100vh;
-        }
+        body { font-family: sans-serif; padding: 10px; background: #1e1e1e; color: white; }
+        ul { list-style-type: none; padding-left: 1em; }
+        li { margin: 0.2em 0; cursor: pointer; }
+        li span:hover { background: rgba(255,255,255,0.1); }
       </style>
     </head>
     <body>
