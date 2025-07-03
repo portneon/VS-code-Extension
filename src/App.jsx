@@ -121,14 +121,14 @@ const App = () => {
       </div>
 
       {/* Dev Tips Section */}
-      <div className="dev-tips-section">
+      {/* <div className="dev-tips-section">
         <h2 className="section-title">Dev tips</h2>
         <div className="dev-tips-container">
           <div className="dev-tip-content">
             <p>"Use meaningful variable names to <span className="highlight">improve code readability</span>, e.g., `userCount` instead of `x`."</p>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 
@@ -214,7 +214,7 @@ const App = () => {
         </div>
 
         {/* Search Bar */}
-        {/* {activeView === 'dashboard' && (
+        {activeView === 'dashboard' && (
           <div className="search-container">
             <Search className="search-icon" />
             <input
@@ -225,10 +225,10 @@ const App = () => {
               className="search-input"
             />
           </div>
-        )} */}
+        )}
 
         {/* Back Button for non-dashboard views */}
-        {/* {activeView !== 'dashboard' && (
+        {activeView !== 'dashboard' && (
           <button
             onClick={() => setActiveView('dashboard')}
             className="back-button"
@@ -236,18 +236,18 @@ const App = () => {
             <span>←</span>
             <span>Back to Dashboard</span>
           </button>
-        )} */}
+        )}
 
         {/* Main Content */}
-        {/* <div className="main-content">
+        <div className="main-content">
           {renderActiveView()}
-        </div> */}
+        </div>
       </div>
 
 
-      {/* <div className="hidden">
+      <div className="hidden">
         <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
-      </div> */}
+      </div>
     </div>
   );
 };
