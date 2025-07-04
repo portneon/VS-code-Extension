@@ -443,3 +443,63 @@
     }
   }
   
+  .note-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 16px;
+    font-size: 16px;
+    border-radius: 12px;
+    resize: vertical;
+    font-family: monospace;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.2);
+    transition: 0.3s ease;
+  }
+  
+  .note-textarea::placeholder {
+    color: #ccc;
+  }
+  
+  .note-buttons {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    margin-top: 24px;
+  }
+  
+  .note-button {
+    padding: 12px 24px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    color: white;
+  }
+  
+  .note-button.save {
+    background: #4CAF50;
+  }
+  
+  .note-button.clear {
+    background: #f44336;
+  }
+  
+  .note-button:hover {
+    filter: brightness(1.15);
+  }
+  
+  .note-warning {
+    color: #ff4d4d;
+    margin-top: 16px;
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+  }
+  
