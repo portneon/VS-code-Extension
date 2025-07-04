@@ -27,7 +27,7 @@ export const useNotes = () => {
 
         setNote("");
         setWarning("");
-        showMessage("✅ Note Saved!");
+        showMessage("Note Saved!");
     };
 
     const handleClear = () => {

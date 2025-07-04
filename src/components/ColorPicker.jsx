@@ -38,7 +38,7 @@ const ColorPicker = () => {
     return (
         <div style={containerStyle}>
             <label htmlFor="colorPicker" style={{ fontSize: "15px" }}>
-                🎨 Pick a Color:
+                Pick a Color:
             </label>
             <input
                 type="color"
@@ -57,7 +57,7 @@ const ColorPicker = () => {
             </select>
 
             <button onClick={handleCopyColor} style={buttonStyle}>
-                📋 Copy {colorFormat.toUpperCase()}
+                Copy {colorFormat.toUpperCase()}
             </button>
         </div>
     );
