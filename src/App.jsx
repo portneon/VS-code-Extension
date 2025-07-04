@@ -215,7 +215,9 @@ const App = () => {
         {/* Header */}
         <div className="header">
           <div className="header-left">
-            <div className="logo-text">LOGO</div>
+            {/* Logo */}
+            <img src={window.logoUri || "./logoo.png"} alt="Logo" className="logo-img" />
+
             <h1 className="app-title">
               {translations[language]?.title || "StackMate"}
             </h1>

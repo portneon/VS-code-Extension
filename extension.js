@@ -13,7 +13,10 @@ function activate(context) {
         vscode.ViewColumn.One,
         {
           enableScripts: true,
-          localResourceRoots: [vscode.Uri.file(path.join(__dirname, "dist"))],
+          localResourceRoots: [
+            vscode.Uri.file(path.join(__dirname, "dist")),
+            vscode.Uri.file(path.join(__dirname, "public"))
+          ],
           retainContextWhenHidden: true,
         }
       );
@@ -120,6 +123,11 @@ function activate(context) {
 function getWebviewContent(panel) {
   const bundlePath = vscode.Uri.file(path.join(__dirname, "dist", "bundle.js"));
   const bundleUri = panel.webview.asWebviewUri(bundlePath);
+  
+  // Add logo URI
+  const logoPath = vscode.Uri.file(path.join(__dirname, "public", "logoo.png"));
+  const logoUri = panel.webview.asWebviewUri(logoPath);
+  
   const nonce = getNonce();
 
   return `
@@ -128,7 +136,7 @@ function getWebviewContent(panel) {
     <head>
       <meta charset="UTF-8" />
       <meta http-equiv="Content-Security-Policy"
-        content="default-src 'none'; script-src 'nonce-${nonce}'; style-src 'unsafe-inline'; img-src data: https:; connect-src *;">
+        content="default-src 'none'; script-src 'nonce-${nonce}'; style-src 'unsafe-inline'; img-src data: https: vscode-resource:; connect-src *;">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>React Webview</title>
       <style>
@@ -144,6 +152,9 @@ function getWebviewContent(panel) {
     </head>
     <body>
       <div id="root"></div>
+      <script nonce="${nonce}">
+        window.logoUri = "${logoUri}";
+      </script>
       <script nonce="${nonce}" src="${bundleUri}"></script>
     </body>
     </html>
