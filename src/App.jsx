@@ -48,6 +48,7 @@ const App = () => {
 
   const commonProps = { darkMode, language, translations };
 
+  // ----- CHANGED parseTrigger -----
   const parseTrigger = (input) => {
     const match = input.match(/^@(\w+)\s+(.*)$/);
     return match
@@ -69,6 +70,7 @@ const App = () => {
     setShowSuggestions(false);
   };
 
+  // ----- NEW resetSearch -----
   const resetSearch = () => {
     setSearchQuery("");
     setTriggerType(null);
@@ -98,6 +100,7 @@ const App = () => {
     }
   };
 
+  // ----- CHANGED highlightTriggerWords -----
   const highlightTriggerWords = (text) =>
     text.split(/(@\w+)/g).map((part, i) =>
       part.startsWith("@") ? (
@@ -109,8 +112,10 @@ const App = () => {
       )
     );
 
+  // ----- CHANGED handleToolClick -----
   const handleToolClick = (tool) => setActiveView(tool);
 
+  // ----- CHANGED renderActiveView -----
   const renderActiveView = () => {
     switch (activeView) {
       case "notes":
@@ -135,7 +140,6 @@ const App = () => {
             </div>
           </div>
         );
-
       case "json-validator":
         return (
           <div className="tool-container">
@@ -145,7 +149,6 @@ const App = () => {
             />
           </div>
         );
-
       case "stackoverflow":
         return (
           <div className="tool-container">
@@ -155,12 +158,12 @@ const App = () => {
             />
           </div>
         );
-
       default:
         return renderDashboard();
     }
   };
 
+  // ----- CHANGED renderDashboard -----
   const renderDashboard = () => (
     <div className="dashboard-content">
       <div className="tools-grid">
@@ -209,6 +212,7 @@ const App = () => {
   return (
     <div className={`app-container ${darkMode ? "dark-mode" : ""}`}>
       <div className="app-content">
+        {/* Header */}
         <div className="header">
           <div className="header-left">
             <div className="logo-text">LOGO</div>
@@ -281,6 +285,7 @@ const App = () => {
           </div>
         </div>
 
+        {/* Search Input */}
         {activeView === "dashboard" && (
           <div className="search-wrapper">
             <Search className="search-icon" />
@@ -307,21 +312,24 @@ const App = () => {
           </div>
         )}
 
+        {/* Back Button */}
         {activeView !== "dashboard" && (
           <button
-            className="back-button"
             onClick={() => {
               setActiveView("dashboard");
               resetSearch();
             }}
+            className="back-button"
           >
             ← Back to Dashboard
           </button>
         )}
 
+        {/* Main Content */}
         <div className="main-content">{renderActiveView()}</div>
       </div>
 
+      {/* Hidden toggle */}
       <div className="hidden">
         <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
       </div>
