@@ -48,14 +48,6 @@ const App = () => {
 
   const commonProps = { darkMode, language, translations };
 
-  // ----- CHANGED parseTrigger -----
-  const resetSearch = () => {
-    setSearchQuery("");
-    setTriggerType(null);
-    setQueryText("");
-    setShowSuggestions(false);
-  };
-
   const parseTrigger = (input) => {
     const match = input.match(/^@(\w+)\s+(.*)$/);
     return match
@@ -70,11 +62,17 @@ const App = () => {
     setTriggerType(trigger);
     setQueryText(query);
     setShowSuggestions(value.startsWith("@") && !trigger);
-     // ----- NEW resetSearch -----
   };
 
   const handleSuggestionClick = (trigger) => {
     setSearchQuery(`${trigger} `);
+    setShowSuggestions(false);
+  };
+
+  const resetSearch = () => {
+    setSearchQuery("");
+    setTriggerType(null);
+    setQueryText("");
     setShowSuggestions(false);
   };
 
@@ -100,7 +98,6 @@ const App = () => {
     }
   };
 
-   // ----- CHANGED highlightTriggerWords -----
   const highlightTriggerWords = (text) =>
     text.split(/(@\w+)/g).map((part, i) =>
       part.startsWith("@") ? (
@@ -112,10 +109,8 @@ const App = () => {
       )
     );
 
-  // ----- CHANGED handleToolClick -----
   const handleToolClick = (tool) => setActiveView(tool);
 
-  // ----- CHANGED renderActiveView -----
   const renderActiveView = () => {
     switch (activeView) {
       case "notes":
@@ -163,7 +158,6 @@ const App = () => {
 
       default:
         return renderDashboard();
-  // ----- CHANGED renderDashboard -----
     }
   };
 
