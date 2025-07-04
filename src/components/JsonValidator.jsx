@@ -1,215 +1,212 @@
-import React, { useEffect, useState } from "react";
-import { showMessage } from "../utils/helpers";
+import React, { useEffect, useState } from 'react';
+import { showMessage } from '../utils/helpers';
 
 const JsonValidator = ({ query, darkMode, language, translations }) => {
-  const [jsonInput, setJsonInput] = useState("");
-  const [jsonValidationResult, setJsonValidationResult] = useState("");
-  const [beautifiedJson, setBeautifiedJson] = useState("");
-  const [isJsonValid, setIsJsonValid] = useState(null);
+    const [jsonInput, setJsonInput] = useState("");
+    const [jsonValidationResult, setJsonValidationResult] = useState("");
+    const [beautifiedJson, setBeautifiedJson] = useState("");
+    const [isJsonValid, setIsJsonValid] = useState(null);
 
-  useEffect(() => {
-    if (query && query.trim()) {
-      setJsonInput(query);
-    }
-  }, [query]);
 
-  const validateJson = () => {
-    if (!jsonInput.trim()) {
-      setJsonValidationResult("Please enter some JSON to validate.");
-      setIsJsonValid(false);
-      return;
-    }
+    useEffect(() => {
+        if (query && query.trim()) {
+            setJsonInput(query);
+        }
+    }, [query]);
 
-    try {
-      JSON.parse(jsonInput);
-      setJsonValidationResult(translations[language].validJson);
-      setIsJsonValid(true);
-    } catch (error) {
-      setJsonValidationResult(
-        `${translations[language].invalidJson} ${error.message}`
-      );
-      setIsJsonValid(false);
-    }
-  };
+    const validateJson = () => {
+        if (!jsonInput.trim()) {
+            setJsonValidationResult("Please enter some JSON to validate.");
+            setIsJsonValid(false);
+            return;
+        }
 
-  const beautifyJson = () => {
-    if (!jsonInput.trim()) {
-      setBeautifiedJson("Please enter some JSON to beautify.");
-      return;
-    }
+        try {
+            JSON.parse(jsonInput);
+            setJsonValidationResult(translations[language].validJson);
+            setIsJsonValid(true);
+        } catch (error) {
+            setJsonValidationResult(`${translations[language].invalidJson} ${error.message}`);
+            setIsJsonValid(false);
+        }
+    };
 
-    try {
-      const parsed = JSON.parse(jsonInput);
-      const formatted = JSON.stringify(parsed, null, 2);
-      setBeautifiedJson(formatted);
-      setJsonValidationResult(translations[language].validJson);
-      setIsJsonValid(true);
-    } catch (error) {
-      setBeautifiedJson(`Error: ${error.message}`);
-      setJsonValidationResult(
-        `${translations[language].invalidJson} ${error.message}`
-      );
-      setIsJsonValid(false);
-    }
-  };
+    const beautifyJson = () => {
+        if (!jsonInput.trim()) {
+            setBeautifiedJson("Please enter some JSON to beautify.");
+            return;
+        }
 
-  const clearJson = () => {
-    setJsonInput("");
-    setJsonValidationResult("");
-    setBeautifiedJson("");
-    setIsJsonValid(null);
-  };
+        try {
+            const parsed = JSON.parse(jsonInput);
+            const formatted = JSON.stringify(parsed, null, 2);
+            setBeautifiedJson(formatted);
+            setJsonValidationResult(translations[language].validJson);
+            setIsJsonValid(true);
+        } catch (error) {
+            setBeautifiedJson(`Error: ${error.message}`);
+            setJsonValidationResult(`${translations[language].invalidJson} ${error.message}`);
+            setIsJsonValid(false);
+        }
+    };
 
-  const copyBeautifiedJson = () => {
-    if (beautifiedJson && isJsonValid) {
-      navigator.clipboard.writeText(beautifiedJson);
-      showMessage("✅ JSON copied to clipboard!");
-    }
-  };
+    const clearJson = () => {
+        setJsonInput("");
+        setJsonValidationResult("");
+        setBeautifiedJson("");
+        setIsJsonValid(null);
+    };
 
-  // 🔧 Style Constants
-  const containerStyle = {
-    marginTop: "40px",
-    padding: "25px",
-    backgroundColor: darkMode ? "#1e1e1e" : "#ffffff",
-    border: darkMode ? "2px solid #555" : "2px solid #ddd",
-    borderRadius: "12px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-  };
+    const copyBeautifiedJson = () => {
+        if (beautifiedJson && isJsonValid) {
+            navigator.clipboard.writeText(beautifiedJson);
+            showMessage("JSON copied to clipboard!");
+        }
+    };
 
-  const headingStyle = {
-    fontSize: "20px",
-    marginBottom: "20px",
-    color: darkMode ? "#ffffff" : "#2B77BD",
-    textAlign: "center",
-    borderBottom: darkMode ? "2px solid #555" : "2px solid #ddd",
-    paddingBottom: "10px",
-  };
+    // 🔧 Style Constants
+    const containerStyle = {
+        marginTop: "40px",
+        padding: "25px",
+        backgroundColor: darkMode ? "#1e1e1e" : "#ffffff",
+        border: darkMode ? "2px solid #555" : "2px solid #ddd",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+    };
 
-  const textAreaStyle = {
-    width: "100%",
-    height: "150px",
-    padding: "15px",
-    fontSize: "14px",
-    fontFamily: "Consolas, Monaco, 'Courier New', monospace",
-    borderRadius: "8px",
-    border: darkMode ? "2px solid #555" : "2px solid #ccc",
-    backgroundColor: darkMode ? "#2a2a2a" : "#fff",
-    color: darkMode ? "#fff" : "#000",
-    resize: "vertical",
-    outline: "none",
-    boxSizing: "border-box",
-  };
+    const headingStyle = {
+        fontSize: "20px",
+        marginBottom: "20px",
+        color: darkMode ? "#ffffff" : "#2B77BD",
+        textAlign: "center",
+        borderBottom: darkMode ? "2px solid #555" : "2px solid #ddd",
+        paddingBottom: "10px"
+    };
 
-  const buttonContainerStyle = {
-    marginTop: "15px",
-    display: "flex",
-    gap: "12px",
-    flexWrap: "wrap",
-    justifyContent: "center",
-  };
+    const textAreaStyle = {
+        width: "100%",
+        height: "150px",
+        padding: "15px",
+        fontSize: "14px",
+        fontFamily: "Consolas, Monaco, 'Courier New', monospace",
+        borderRadius: "8px",
+        border: darkMode ? "2px solid #555" : "2px solid #ccc",
+        backgroundColor: darkMode ? "#2a2a2a" : "#fff",
+        color: darkMode ? "#fff" : "#000",
+        resize: "vertical",
+        outline: "none",
+        boxSizing: "border-box"
+    };
 
-  const buttonStyle = (bgColor) => ({
-    backgroundColor: bgColor,
-    color: "white",
-    border: "none",
-    padding: "10px 15px",
-    borderRadius: "6px",
-    cursor: "pointer",
-  });
+    const buttonContainerStyle = {
+        marginTop: "15px",
+        display: "flex",
+        gap: "12px",
+        flexWrap: "wrap",
+        justifyContent: "center"
+    };
 
-  const validationResultStyle = {
-    marginTop: "20px",
-    padding: "15px",
-    borderRadius: "8px",
-    fontWeight: "bold",
-    fontSize: "16px",
-    textAlign: "center",
-    color: isJsonValid ? "#4CAF50" : "#f44336",
-    backgroundColor: darkMode ? "#2a2a2a" : "#f9f9f9",
-    border: `2px solid ${isJsonValid ? "#4CAF50" : "#f44336"}`,
-  };
+    const buttonStyle = (bgColor) => ({
+        backgroundColor: bgColor,
+        color: "white",
+        border: "none",
+        padding: "10px 15px",
+        borderRadius: "6px",
+        cursor: "pointer",
+    });
 
-  const beautifiedContainerStyle = {
-    marginTop: "25px",
-    padding: "20px",
-    backgroundColor: darkMode ? "#2a2a2a" : "#f8f9fa",
-    border: darkMode ? "2px solid #555" : "2px solid #ddd",
-    borderRadius: "8px",
-  };
+    const validationResultStyle = {
+        marginTop: "20px",
+        padding: "15px",
+        borderRadius: "8px",
+        fontWeight: "bold",
+        fontSize: "16px",
+        textAlign: "center",
+        color: isJsonValid ? "#4CAF50" : "#f44336",
+        backgroundColor: darkMode ? "#2a2a2a" : "#f9f9f9",
+        border: `2px solid ${isJsonValid ? "#4CAF50" : "#f44336"}`
+    };
 
-  const beautifiedHeaderStyle = {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "15px",
-    borderBottom: darkMode ? "1px solid #555" : "1px solid #ddd",
-    paddingBottom: "10px",
-  };
+    const beautifiedContainerStyle = {
+        marginTop: "25px",
+        padding: "20px",
+        backgroundColor: darkMode ? "#2a2a2a" : "#f8f9fa",
+        border: darkMode ? "2px solid #555" : "2px solid #ddd",
+        borderRadius: "8px"
+    };
 
-  const preStyle = {
-    padding: "20px",
-    borderRadius: "6px",
-    fontSize: "13px",
-    fontFamily: "Consolas, Monaco, 'Courier New', monospace",
-    overflow: "auto",
-    maxHeight: "400px",
-    whiteSpace: "pre-wrap",
-    wordWrap: "break-word",
-    margin: 0,
-    backgroundColor: darkMode ? "#0d1117" : "#ffffff",
-    color: darkMode ? "#e6edf3" : "#24292f",
-    border: darkMode ? "1px solid #30363d" : "1px solid #e1e4e8",
-  };
+    const beautifiedHeaderStyle = {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: "15px",
+        borderBottom: darkMode ? "1px solid #555" : "1px solid #ddd",
+        paddingBottom: "10px"
+    };
 
-  return (
-    <div style={containerStyle}>
-      <h3 style={headingStyle}>🔧 {translations[language].jsonValidator}</h3>
+    const preStyle = {
+        padding: "20px",
+        borderRadius: "6px",
+        fontSize: "13px",
+        fontFamily: "Consolas, Monaco, 'Courier New', monospace",
+        overflow: "auto",
+        maxHeight: "400px",
+        whiteSpace: "pre-wrap",
+        wordWrap: "break-word",
+        margin: 0,
+        backgroundColor: darkMode ? "#0d1117" : "#ffffff",
+        color: darkMode ? "#e6edf3" : "#24292f",
+        border: darkMode ? "1px solid #30363d" : "1px solid #e1e4e8"
+    };
 
-      <textarea
-        placeholder={translations[language].jsonPlaceholder}
-        value={jsonInput}
-        onChange={(e) => setJsonInput(e.target.value)}
-        style={textAreaStyle}
-      />
+    return (
+        <div style={containerStyle}>
+            <h3 style={headingStyle}>
+                {translations[language].jsonValidator}
+            </h3>
 
-      <div style={buttonContainerStyle}>
-        <button onClick={validateJson} style={buttonStyle("#2196F3")}>
-          {translations[language].validateButton}
-        </button>
-        <button onClick={beautifyJson} style={buttonStyle("#FF9800")}>
-          ✨ {translations[language].beautifyButton}
-        </button>
-        <button onClick={clearJson} style={buttonStyle("#f44336")}>
-          🧹 {translations[language].clearJsonButton}
-        </button>
-      </div>
+            <textarea
+                placeholder={translations[language].jsonPlaceholder}
+                value={jsonInput}
+                onChange={(e) => setJsonInput(e.target.value)}
+                style={textAreaStyle}
+            />
 
-      {jsonValidationResult && (
-        <div style={validationResultStyle}>{jsonValidationResult}</div>
-      )}
+            <div style={buttonContainerStyle}>
+                <button onClick={validateJson} style={buttonStyle("#2196F3")}>
+                    {translations[language].validateButton}
+                </button>
+                <button onClick={beautifyJson} style={buttonStyle("#FF9800")}>
+                    {translations[language].beautifyButton}
+                </button>
+                <button onClick={clearJson} style={buttonStyle("#f44336")}>
+                    {translations[language].clearJsonButton}
+                </button>
+            </div>
 
-      {beautifiedJson && isJsonValid && (
-        <div style={beautifiedContainerStyle}>
-          <div style={beautifiedHeaderStyle}>
-            <h4
-              style={{
-                margin: 0,
-                color: darkMode ? "#ffffff" : "#333",
-                fontSize: "16px",
-              }}
-            >
-              {translations[language].beautifiedJson}
-            </h4>
-            <button onClick={copyBeautifiedJson} style={buttonStyle("#4CAF50")}>
-              📋 {translations[language].copyJsonButton}
-            </button>
-          </div>
-          <pre style={preStyle}>{beautifiedJson}</pre>
+            {jsonValidationResult && (
+                <div style={validationResultStyle}>
+                    {jsonValidationResult}
+                </div>
+            )}
+
+            {beautifiedJson && isJsonValid && (
+                <div style={beautifiedContainerStyle}>
+                    <div style={beautifiedHeaderStyle}>
+                        <h4 style={{ margin: 0, color: darkMode ? "#ffffff" : "#333", fontSize: "16px" }}>
+                            {translations[language].beautifiedJson}
+                        </h4>
+                        <button onClick={copyBeautifiedJson} style={buttonStyle("#4CAF50")}>
+                            {translations[language].copyJsonButton}
+                        </button>
+                    </div>
+                    <pre style={preStyle}>
+                        {beautifiedJson}
+                    </pre>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default JsonValidator;

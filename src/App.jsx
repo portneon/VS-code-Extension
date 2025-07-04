@@ -18,7 +18,7 @@ import ColorPicker from "./components/ColorPicker";
 import StackOverflow from "./components/StackOverflow";
 import ThemeToggle from "./components/ThemeToggle";
 import InternetCheck from "./components/ConnectionStatus";
-import TreeView from "./components/TreeView.jsx"; // <- from your version
+import TreeView from "./components/TreeView";
 
 import { translations } from "./utils/translations.js";
 import { useNotes } from "./utils/useNotes.js";
@@ -48,6 +48,14 @@ const App = () => {
 
   const commonProps = { darkMode, language, translations };
 
+  // ----- resetSearch -----
+  const resetSearch = () => {
+    setSearchQuery("");
+    setTriggerType(null);
+    setQueryText("");
+    setShowSuggestions(false);
+  };
+
   const parseTrigger = (input) => {
     const match = input.match(/^@(\w+)\s+(.*)$/);
     return match
@@ -66,14 +74,6 @@ const App = () => {
 
   const handleSuggestionClick = (trigger) => {
     setSearchQuery(`${trigger} `);
-    setShowSuggestions(false);
-  };
-
-  //  resetSearch from your version
-  const resetSearch = () => {
-    setSearchQuery("");
-    setTriggerType(null);
-    setQueryText("");
     setShowSuggestions(false);
   };
 
@@ -210,7 +210,6 @@ const App = () => {
   return (
     <div className={`app-container ${darkMode ? "dark-mode" : ""}`}>
       <div className="app-content">
-        {/* Header */}
         <div className="header">
           <div className="header-left">
             <div className="logo-text">LOGO</div>
@@ -283,7 +282,6 @@ const App = () => {
           </div>
         </div>
 
-        {/* Search Input */}
         {activeView === "dashboard" && (
           <div className="search-wrapper">
             <Search className="search-icon" />
@@ -310,7 +308,6 @@ const App = () => {
           </div>
         )}
 
-        {/* Back Button */}
         {activeView !== "dashboard" && (
           <button
             className="back-button"
@@ -323,7 +320,6 @@ const App = () => {
           </button>
         )}
 
-        {/* Main Content */}
         <div className="main-content">{renderActiveView()}</div>
       </div>
 
