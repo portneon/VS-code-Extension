@@ -48,14 +48,6 @@ const App = () => {
 
   const commonProps = { darkMode, language, translations };
 
-  // ----- resetSearch -----
-  const resetSearch = () => {
-    setSearchQuery("");
-    setTriggerType(null);
-    setQueryText("");
-    setShowSuggestions(false);
-  };
-
   const parseTrigger = (input) => {
     const match = input.match(/^@(\w+)\s+(.*)$/);
     return match
@@ -74,6 +66,13 @@ const App = () => {
 
   const handleSuggestionClick = (trigger) => {
     setSearchQuery(`${trigger} `);
+    setShowSuggestions(false);
+  };
+
+  const resetSearch = () => {
+    setSearchQuery("");
+    setTriggerType(null);
+    setQueryText("");
     setShowSuggestions(false);
   };
 
