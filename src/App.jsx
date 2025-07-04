@@ -18,6 +18,7 @@ import ColorPicker from "./components/ColorPicker";
 import StackOverflow from "./components/StackOverflow";
 import ThemeToggle from "./components/ThemeToggle";
 import InternetCheck from "./components/ConnectionStatus";
+import TreeView from "./components/TreeView";
 
 import { translations } from "./utils/translations.js";
 import { useNotes } from "./utils/useNotes.js";
@@ -47,15 +48,12 @@ const App = () => {
 
   const commonProps = { darkMode, language, translations };
 
+  // ----- CHANGED parseTrigger -----
   const parseTrigger = (input) => {
     const match = input.match(/^@(\w+)\s+(.*)$/);
-    if (match) {
-      return {
-        trigger: match[1].toLowerCase(),
-        query: match[2],
-      };
-    }
-    return { trigger: null, query: "" };
+    return match
+      ? { trigger: match[1].toLowerCase(), query: match[2] }
+      : { trigger: null, query: "" };
   };
 
   const handleSearchChange = (e) => {
@@ -69,6 +67,14 @@ const App = () => {
 
   const handleSuggestionClick = (trigger) => {
     setSearchQuery(`${trigger} `);
+    setShowSuggestions(false);
+  };
+
+  // ----- NEW resetSearch -----
+  const resetSearch = () => {
+    setSearchQuery("");
+    setTriggerType(null);
+    setQueryText("");
     setShowSuggestions(false);
   };
 
@@ -89,30 +95,27 @@ const App = () => {
             break;
           default:
             setActiveView("notes");
-            break;
         }
       }
     }
   };
 
-  const highlightTriggerWords = (text) => {
-    const parts = text.split(/(@\w+)/g);
-    return parts.map((part, index) => {
-      if (part.startsWith("@")) {
-        return (
-          <span key={index} className="highlighted-trigger">
-            {part}
-          </span>
-        );
-      }
-      return part;
-    });
-  };
+  // ----- CHANGED highlightTriggerWords -----
+  const highlightTriggerWords = (text) =>
+    text.split(/(@\w+)/g).map((part, i) =>
+      part.startsWith("@") ? (
+        <span key={i} className="highlighted-trigger">
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
 
-  const handleToolClick = (tool) => {
-    setActiveView(tool);
-  };
+  // ----- CHANGED handleToolClick -----
+  const handleToolClick = (tool) => setActiveView(tool);
 
+  // ----- CHANGED renderActiveView -----
   const renderActiveView = () => {
     switch (activeView) {
       case "notes":
@@ -140,13 +143,19 @@ const App = () => {
       case "json-validator":
         return (
           <div className="tool-container">
-            <JsonValidator query={queryText} {...commonProps} />
+            <JsonValidator
+              query={triggerType === "json" ? queryText : ""}
+              {...commonProps}
+            />
           </div>
         );
       case "stackoverflow":
         return (
           <div className="tool-container">
-            <StackOverflow query={searchQuery.replace(/^@stack\s*/, "")} />
+            <StackOverflow
+              query={triggerType === "stack" ? queryText : ""}
+              {...commonProps}
+            />
           </div>
         );
       default:
@@ -154,6 +163,7 @@ const App = () => {
     }
   };
 
+  // ----- CHANGED renderDashboard -----
   const renderDashboard = () => (
     <div className="dashboard-content">
       <div className="tools-grid">
@@ -186,13 +196,14 @@ const App = () => {
       <div className="dev-tips-section">
         <h2 className="section-title">Dev Tips</h2>
         <div className="dev-tips-container">
-          <div className="dev-tip-content">
-            <p>
-              "Use meaningful variable names to{" "}
-              <span className="highlight">improve code readability</span>, e.g.,{" "}
-              <code>userCount</code> instead of <code>x</code>."
-            </p>
-          </div>
+          <DevTip />
+        </div>
+      </div>
+
+      <div className="dev-tips-section">
+        <h2 className="section-title">File Explorer</h2>
+        <div className="dev-tips-container">
+          <TreeView />
         </div>
       </div>
     </div>
@@ -286,16 +297,13 @@ const App = () => {
               value={searchQuery}
               onChange={handleSearchChange}
               onKeyDown={handleKeyDown}
-              placeholder="search with @stack @json @notes ..... "
+              placeholder="search with @stack @json @notes ..."
               rows={1}
             />
             {showSuggestions && (
               <ul className="trigger-suggestions">
                 {["@stack", "@json", "@notes"].map((trigger) => (
-                  <li
-                    key={trigger}
-                    onClick={() => handleSuggestionClick(trigger)}
-                  >
+                  <li key={trigger} onClick={() => handleSuggestionClick(trigger)}>
                     {trigger}
                   </li>
                 ))}
@@ -307,7 +315,10 @@ const App = () => {
         {/* Back Button */}
         {activeView !== "dashboard" && (
           <button
-            onClick={() => setActiveView("dashboard")}
+            onClick={() => {
+              setActiveView("dashboard");
+              resetSearch();
+            }}
             className="back-button"
           >
             ← Back to Dashboard

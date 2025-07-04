@@ -69,10 +69,10 @@ const NoteTaker = ({
 
       <div style={buttonContainerStyle}>
         <button onClick={onSave} style={saveButtonStyle}>
-          💾 {translations[language].saveButton}
+          {translations[language].saveButton}
         </button>
         <button onClick={onClear} style={clearButtonStyle}>
-          🧹 {translations[language].clearButton}
+          {translations[language].clearButton}
         </button>
       </div>
 

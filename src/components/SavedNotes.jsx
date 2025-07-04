@@ -37,7 +37,7 @@ const SavedNotes = ({ savedNotes, onTogglePin, darkMode, language, translations 
 
     return (
         <div style={containerStyle}>
-            <strong>🗒️ {translations[language].saveNote}:</strong>
+            <strong> {translations[language].saveNote}:</strong>
             {savedNotes.map((note) => (
                 <div key={note.id} style={noteItemStyle}>
                     <div style={noteContentStyle}>

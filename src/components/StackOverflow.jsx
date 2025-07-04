@@ -66,8 +66,8 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.heading}>⬆️ StackOverflow Search</h2>
+    <div style={styles.container} className="stackoverflow-container">
+      <h2 style={styles.heading}>StackOverflow Search</h2>
 
       <div style={styles.searchBoxWrapper}>
         <input
@@ -77,7 +77,7 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
           placeholder="Search StackOverflow..."
           style={styles.input}
         />
-        <span style={styles.searchIcon}>🔍</span>
+        <span style={styles.searchIcon}></span>
       </div>
 
       {suggestions.length > 0 && (
@@ -88,7 +88,7 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
               style={styles.suggestionItem}
               onClick={() => handleSelectQuestion(s)}
             >
-              <strong>{s.title}</strong>
+              <strong style={styles.suggestionTitle}>{s.title}</strong>
               <div style={styles.suggestionMeta}>
                 <span style={styles.suggestionScore}>⬆️ {s.score}</span>
                 <div style={styles.suggestionTags}>
@@ -169,7 +169,7 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
                   ✅ Accepted Answer
                 </span>
               ) : (
-                <span style={{ color: "#888" }}>Answer</span>
+                <span style={{ color: "#000" }}>Answer</span>
               )}
               <span style={styles.answerScore}>
                 ⬆️ {answers[currentAnswerIndex].score}
@@ -197,10 +197,23 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
 
       <style>
         {`
-          p { margin: 0 0 6px 0; }
-          pre { background: #f6f8fa; padding: 6px; border-radius: 4px; }
-          code { background: #f6f8fa; padding: 2px 4px; border-radius: 3px; }
-          a { color: #0074cc; }
+          .stackoverflow-container * {
+            color: #000 !important;
+          }
+          .stackoverflow-container p { margin: 0 0 6px 0; color: #000 !important; }
+          .stackoverflow-container pre { background: #f6f8fa; padding: 6px; border-radius: 4px; color: #000 !important; }
+          .stackoverflow-container code { background: #f6f8fa; padding: 2px 4px; border-radius: 3px; color: #000 !important; }
+          .stackoverflow-container a { color: #0074cc !important; }
+          .stackoverflow-container h1, .stackoverflow-container h2, .stackoverflow-container h3, 
+          .stackoverflow-container h4, .stackoverflow-container h5, .stackoverflow-container h6 { color: #000 !important; }
+          .stackoverflow-container ul, .stackoverflow-container ol, .stackoverflow-container li { color: #000 !important; }
+          .stackoverflow-container blockquote { color: #000 !important; }
+          .stackoverflow-container strong, .stackoverflow-container b { color: #000 !important; }
+          .stackoverflow-container em, .stackoverflow-container i { color: #000 !important; }
+          .stackoverflow-container span { color: #000 !important; }
+          .stackoverflow-container div { color: #000 !important; }
+          .stackoverflow-container input { color: #000 !important; }
+          .stackoverflow-container input::placeholder { color: #666 !important; }
         `}
       </style>
     </div>
@@ -216,12 +229,14 @@ const styles = {
     background: "#fff",
     borderRadius: 12,
     boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+    color: "#000",
   },
   heading: {
     textAlign: "center",
     fontSize: 24,
     fontWeight: 600,
     marginBottom: 16,
+    color: "#000",
   },
   searchBoxWrapper: {
     position: "relative",
@@ -232,9 +247,11 @@ const styles = {
     padding: "12px 40px 12px 14px",
     fontSize: 16,
     borderRadius: 8,
-    border: "1.5px solid #f48024",
+    border: "1.5px solid #000",
     outline: "none",
-    background: "#f9f9f9",
+    background: "#fff !important",
+    color: "#000 !important",
+    fontFamily: "Segoe UI, sans-serif",
   },
   searchIcon: {
     position: "absolute",
@@ -242,14 +259,14 @@ const styles = {
     top: "50%",
     transform: "translateY(-50%)",
     fontSize: 20,
-    color: "#f48024",
+    color: "#000",
   },
   suggestions: {
     position: "absolute",
     width: "100%",
     zIndex: 10,
     background: "#fff",
-    border: "1.5px solid #f48024",
+    border: "1.5px solid #000",
     borderRadius: 8,
     maxHeight: 240,
     overflowY: "auto",
@@ -260,6 +277,10 @@ const styles = {
     borderBottom: "1px solid #eee",
     background: "#fff",
     transition: "background 0.2s",
+    color: "#000",
+  },
+  suggestionTitle: {
+    color: "#000",
   },
   suggestionMeta: {
     display: "flex",
@@ -268,7 +289,7 @@ const styles = {
     marginTop: 4,
   },
   suggestionScore: {
-    color: "#f48024",
+    color: "#000",
     fontWeight: 600,
     fontSize: 13,
   },
@@ -281,7 +302,7 @@ const styles = {
     padding: "2px 6px",
     borderRadius: 4,
     fontSize: 12,
-    color: "#39739d",
+    color: "#000",
   },
   card: {
     marginTop: 24,
@@ -294,6 +315,7 @@ const styles = {
     fontSize: 20,
     fontWeight: 700,
     marginBottom: 8,
+    color: "#000",
   },
   questionMeta: {
     display: "flex",
@@ -302,7 +324,7 @@ const styles = {
     flexWrap: "wrap",
   },
   questionScore: {
-    color: "#f48024",
+    color: "#000",
     fontWeight: 600,
     fontSize: 14,
   },
@@ -311,7 +333,7 @@ const styles = {
     alignItems: "center",
     gap: 6,
     fontSize: 13,
-    color: "#555",
+    color: "#000",
   },
   avatar: {
     width: 20,
@@ -326,6 +348,7 @@ const styles = {
     padding: 10,
     borderRadius: 6,
     border: "1px solid #eee",
+    color: "#000",
   },
   carousel: {
     marginTop: 24,
@@ -338,7 +361,7 @@ const styles = {
   },
   carouselBtn: {
     padding: "6px 14px",
-    background: "#f48024",
+    background: "#000",
     color: "#fff",
     border: "none",
     borderRadius: 6,
@@ -348,7 +371,7 @@ const styles = {
   carouselCount: {
     fontSize: 14,
     fontWeight: 600,
-    color: "#f48024",
+    color: "#000",
   },
   answerCard: {
     padding: 16,
@@ -363,7 +386,7 @@ const styles = {
     alignItems: "center",
   },
   answerScore: {
-    color: "#f48024",
+    color: "#000",
     fontWeight: 600,
   },
 };

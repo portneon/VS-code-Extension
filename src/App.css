@@ -224,6 +224,7 @@ body {
   font-family: inherit;
   line-height: 1.5;
 }
+
 .search-real-input:focus {
   outline: none;
   box-shadow: none;
@@ -246,6 +247,7 @@ body {
   border: 1px solid #374151;
   outline: none;
 }
+
 .highlighted-trigger {
   color: #112092;
 }
