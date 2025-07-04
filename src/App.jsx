@@ -18,12 +18,12 @@ import ColorPicker from "./components/ColorPicker";
 import StackOverflow from "./components/StackOverflow";
 import ThemeToggle from "./components/ThemeToggle";
 import InternetCheck from "./components/ConnectionStatus";
+import TreeView from "./components/TreeView.jsx"; // <- from your version
 
 import { translations } from "./utils/translations.js";
 import { useNotes } from "./utils/useNotes.js";
 
 import "./App.css";
-import TreeView from "./components/TreeView.jsx";
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -69,6 +69,7 @@ const App = () => {
     setShowSuggestions(false);
   };
 
+  //  resetSearch from your version
   const resetSearch = () => {
     setSearchQuery("");
     setTriggerType(null);
@@ -189,14 +190,14 @@ const App = () => {
           </div>
         </div>
       </div>
-  
+
       <div className="dev-tips-section">
         <h2 className="section-title">Dev Tips</h2>
         <div className="dev-tips-container">
           <DevTip />
         </div>
       </div>
-  
+
       <div className="dev-tips-section">
         <h2 className="section-title">File Explorer</h2>
         <div className="dev-tips-container">
@@ -205,12 +206,11 @@ const App = () => {
       </div>
     </div>
   );
-  
-
 
   return (
     <div className={`app-container ${darkMode ? "dark-mode" : ""}`}>
       <div className="app-content">
+        {/* Header */}
         <div className="header">
           <div className="header-left">
             <div className="logo-text">LOGO</div>
@@ -283,6 +283,7 @@ const App = () => {
           </div>
         </div>
 
+        {/* Search Input */}
         {activeView === "dashboard" && (
           <div className="search-wrapper">
             <Search className="search-icon" />
@@ -309,6 +310,7 @@ const App = () => {
           </div>
         )}
 
+        {/* Back Button */}
         {activeView !== "dashboard" && (
           <button
             className="back-button"
@@ -321,6 +323,7 @@ const App = () => {
           </button>
         )}
 
+        {/* Main Content */}
         <div className="main-content">{renderActiveView()}</div>
       </div>
 

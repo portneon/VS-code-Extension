@@ -66,8 +66,8 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.heading}>⬆ StackOverflow Search</h2>
+    <div style={styles.container} className="stackoverflow-container">
+      <h2 style={styles.heading}>StackOverflow Search</h2>
 
       <div style={styles.searchBoxWrapper}>
         <input
@@ -93,7 +93,9 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
                 <span style={styles.suggestionScore}>⬆️ {s.score}</span>
                 <div style={styles.suggestionTags}>
                   {s.tags?.slice(0, 3).map((tag) => (
-                    <span key={tag} style={styles.tag}>{tag}</span>
+                    <span key={tag} style={styles.tag}>
+                      {tag}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -111,12 +113,18 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
             </span>
             <div style={styles.suggestionTags}>
               {selectedQuestion.tags?.map((tag) => (
-                <span key={tag} style={styles.tag}>{tag}</span>
+                <span key={tag} style={styles.tag}>
+                  {tag}
+                </span>
               ))}
             </div>
             {selectedQuestion.owner && (
               <span style={styles.owner}>
-                <img src={selectedQuestion.owner.profile_image} alt="user" style={styles.avatar} />
+                <img
+                  src={selectedQuestion.owner.profile_image}
+                  alt="user"
+                  style={styles.avatar}
+                />
                 {selectedQuestion.owner.display_name}
               </span>
             )}
@@ -132,7 +140,7 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
         <div style={styles.carousel}>
           <div style={styles.carouselHeader}>
             <button
-              onClick={() => setCurrentAnswerIndex(i => Math.max(0, i - 1))}
+              onClick={() => setCurrentAnswerIndex((i) => Math.max(0, i - 1))}
               disabled={currentAnswerIndex === 0}
               style={styles.carouselBtn}
             >
@@ -143,7 +151,9 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
             </span>
             <button
               onClick={() =>
-                setCurrentAnswerIndex(i => Math.min(answers.length - 1, i + 1))
+                setCurrentAnswerIndex((i) =>
+                  Math.min(answers.length - 1, i + 1)
+                )
               }
               disabled={currentAnswerIndex === answers.length - 1}
               style={styles.carouselBtn}
@@ -172,7 +182,7 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
                 <span style={{ color: "#888" }}>Answer</span>
               )}
               <span style={styles.answerScore}>
-                 {answers[currentAnswerIndex].score}
+                {answers[currentAnswerIndex].score}
               </span>
               {answers[currentAnswerIndex].owner && (
                 <span style={styles.owner}>
@@ -234,8 +244,9 @@ const styles = {
     borderRadius: 8,
     border: "1.5px solid #f48024",
     outline: "none",
-    background: "#f9f9f9",
-    color: "white"
+    background: "#fff !important",
+    color: "#000 !important",
+    fontFamily: "Segoe UI, sans-serif",
   },
   searchIcon: {
     position: "absolute",
