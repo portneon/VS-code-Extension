@@ -80,29 +80,29 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
         <span style={styles.searchIcon}>🔍</span>
       </div>
 
-      {suggestions.length > 0 && (
-        <div style={styles.suggestions}>
-          {suggestions.map((s) => (
-            <div
-              key={s.question_id}
-              style={styles.suggestionItem}
-              onClick={() => handleSelectQuestion(s)}
-            >
-              <strong>{s.title}</strong>
-              <div style={styles.suggestionMeta}>
-                <span style={styles.suggestionScore}>⬆️ {s.score}</span>
-                <div style={styles.suggestionTags}>
-                  {s.tags?.slice(0, 3).map((tag) => (
-                    <span key={tag} style={styles.tag}>
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+		  {suggestions.length > 0 && (
+		  <div style={styles.suggestions}>
+		    {suggestions.map((s) => (
+		      <div
+		        key={s.question_id}
+		        style={styles.suggestionItem}
+		        onClick={() => handleSelectQuestion(s)}
+		      >
+		        <strong style={styles.suggestionTitle}>{s.title}</strong>
+		        <div style={styles.suggestionMeta}>
+		          <span style={styles.suggestionScore}>⬆️ {s.score}</span>
+		          <div style={styles.suggestionTags}>
+		            {s.tags?.slice(0, 3).map((tag) => (
+		              <span key={tag} style={styles.tag}>
+		                {tag}
+		              </span>
+		            ))}
+		          </div>
+		        </div>
+		      </div>
+		    ))}
+		  </div>
+		)}
 
       {selectedQuestion && (
         <div style={styles.card}>
@@ -176,7 +176,7 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
             <div style={styles.answerHeader}>
               {answers[currentAnswerIndex].is_accepted ? (
                 <span style={{ color: "#4caf50", fontWeight: 700 }}>
-                  Accepted Answer
+                   ✅ Accepted Answer
                 </span>
               ) : (
                 <span style={{ color: "#888" }}>Answer</span>
@@ -245,8 +245,10 @@ const styles = {
     border: "1.5px solid #f48024",
     outline: "none",
     background: "#fff !important",
-    color: "#000 !important",
+    color: "#1f2937 !important",
     fontFamily: "Segoe UI, sans-serif",
+    boxSizing: "border-box",
+    transition: "border-color 0.2s ease",
   },
   searchIcon: {
     position: "absolute",
