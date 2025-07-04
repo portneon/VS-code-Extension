@@ -157,7 +157,7 @@ function getNonce() {
   ).join("");
 }
 
-function deactivate() {}
+function deactivate() { }
 
 module.exports = {
   activate,

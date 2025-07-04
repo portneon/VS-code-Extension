@@ -50,10 +50,17 @@
   }
   
   .app-title {
-    color: white;
-    font-size: 32px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
+    background: linear-gradient(45deg, #ffffff, #e0b3ff, #c084fc, #a855f7, #8b5cf6);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      text-align: center;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
   }
   
   /* Header Controls */
@@ -197,6 +204,7 @@
     width: 100%;
     background: transparent;
     border: none;
+    border-radius: 20px;
     outline: none;
     resize: none;
     color: white;
@@ -205,6 +213,12 @@
     font-family: inherit;
     line-height: 1.5;
   }
+
+    .search-real-input:focus {
+      outline: none;
+      box-shadow: none;
+      border: none;
+    }
   
   
   /* Autocomplete Suggestions */
