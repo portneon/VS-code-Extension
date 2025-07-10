@@ -56,7 +56,7 @@ app.delete("/delete-temp", (req, res) => {
       }
       deleted.push(abs);
     } catch (err) {
-      console.warn(`❌ Failed to delete: ${abs}`, err.message);
+      console.warn(`Failed to delete: ${abs}`, err.message);
     }
   }
 
@@ -64,5 +64,5 @@ app.delete("/delete-temp", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Cleanup API running at http://localhost:${PORT}`);
+  console.log(`Cleanup API running at http://localhost:${PORT}`);
 });
