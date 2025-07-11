@@ -10,8 +10,8 @@ const JsonValidator = ({ query, darkMode, language, translations }) => {
 
   useEffect(() => {
     const fetchFromQueryUrl = async () => {
-        if (!query || !query.trim()) return;
-        setinput(query)
+      if (!query || !query.trim()) return;
+      setinput(query);
 
       try {
         const response = await fetch(query);
@@ -117,22 +117,27 @@ const JsonValidator = ({ query, darkMode, language, translations }) => {
       showMessage("JSON copied to clipboard!");
     }
   };
-
-  const containerStyle = {
-    marginTop: "40px",
-    padding: "25px",
-    backgroundColor: darkMode ? "#1e1e1e" : "#ffffff",
-    border: darkMode ? "2px solid #555" : "2px solid #ddd",
-    borderRadius: "12px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-  };
+// this style was not looking good
+//   const containerStyle = {
+//     marginTop: "40px",
+//     padding: "25px",
+//     backgroundColor: darkMode ? "#1a1a1a" : "rgba(255, 255, 255, 0.1)",
+//     border: darkMode
+//       ? "1px solid rgba(255, 255, 255, 0.1)"
+//       : "1px solid rgba(0,0,0,0.05)",
+//     borderRadius: "16px",
+//     backdropFilter: "blur(10px)",
+//     boxShadow: darkMode
+//       ? "0 10px 25px rgba(0,0,0,0.3)"
+//       : "0 8px 20px rgba(0, 0, 0, 0.1)",
+//   };
 
   const headingStyle = {
-    fontSize: "20px",
+    fontSize: "24px",
     marginBottom: "20px",
-    color: darkMode ? "#ffffff" : "#2B77BD",
+    color: darkMode ? "#ffffff" : "#e0b3ff",
     textAlign: "center",
-    borderBottom: darkMode ? "2px solid #555" : "2px solid #ddd",
+    borderBottom: "2px solid rgba(255,255,255,0.15)",
     paddingBottom: "10px",
   };
 
@@ -142,13 +147,12 @@ const JsonValidator = ({ query, darkMode, language, translations }) => {
     padding: "15px",
     fontSize: "14px",
     fontFamily: "Consolas, Monaco, 'Courier New', monospace",
-    borderRadius: "8px",
-    border: darkMode ? "2px solid #555" : "2px solid #ccc",
-    backgroundColor: darkMode ? "#2a2a2a" : "#fff",
-    color: darkMode ? "#fff" : "#000",
+    borderRadius: "12px",
+    border: "1px solid rgba(255,255,255,0.2)",
+    backgroundColor: darkMode ? "#2e2e2e" : "#68338a",
+    color: "#fff",
     resize: "vertical",
     outline: "none",
-    boxSizing: "border-box",
   };
 
   const buttonContainerStyle = {
@@ -159,33 +163,37 @@ const JsonValidator = ({ query, darkMode, language, translations }) => {
     justifyContent: "center",
   };
 
-  const buttonStyle = (bgColor) => ({
-    backgroundColor: bgColor,
+  const buttonStyle ={
+    backgroundColor: darkMode ? "#2a2a2a" : "#68338a",
     color: "white",
     border: "none",
-    padding: "10px 15px",
-    borderRadius: "6px",
+    padding: "16px 16px",
+    borderRadius: "8px",
     cursor: "pointer",
-  });
+    fontWeight: "600",
+    fontSize: "14px",
+    transition: "all 0.2s ease",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+  };
 
   const validationResultStyle = {
     marginTop: "20px",
     padding: "15px",
-    borderRadius: "8px",
+    borderRadius: "12px",
     fontWeight: "bold",
     fontSize: "16px",
     textAlign: "center",
-    color: isJsonValid ? "#4CAF50" : "#f44336",
-    backgroundColor: darkMode ? "#2a2a2a" : "#f9f9f9",
-    border: `2px solid ${isJsonValid ? "#4CAF50" : "#f44336"}`,
+    color: isJsonValid ? "#00e676" : "#ff5252",
+    backgroundColor: darkMode ? "#2a2a2a" : "#68338a",
+    border: `2px solid ${isJsonValid ? "#00e676" : "#ff5252"}`,
   };
 
   const beautifiedContainerStyle = {
     marginTop: "25px",
     padding: "20px",
-    backgroundColor: darkMode ? "#2a2a2a" : "#f8f9fa",
-    border: darkMode ? "2px solid #555" : "2px solid #ddd",
-    borderRadius: "8px",
+    backgroundColor: darkMode ? "#2a2a2a" : "#68338a",
+    border: darkMode ? "1px solid #30363d" : "1px solid #e1e4e8",
+    borderRadius: "12px",
   };
 
   const beautifiedHeaderStyle = {
@@ -193,53 +201,72 @@ const JsonValidator = ({ query, darkMode, language, translations }) => {
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "15px",
-    borderBottom: darkMode ? "1px solid #555" : "1px solid #ddd",
+    borderBottom: "1px solid rgba(255,255,255,0.2)",
     paddingBottom: "10px",
   };
 
   const preStyle = {
     padding: "20px",
-    borderRadius: "6px",
-    fontSize: "13px",
+    borderRadius: "10px",
+    fontSize: "15px",
     fontFamily: "Consolas, Monaco, 'Courier New', monospace",
     overflow: "auto",
-    maxHeight: "400px",
+    minHeight: "400px",
     whiteSpace: "pre-wrap",
     wordWrap: "break-word",
     margin: 0,
-    backgroundColor: darkMode ? "#0d1117" : "#ffffff",
-    color: darkMode ? "#e6edf3" : "#24292f",
+    backgroundColor:darkMode ? "#2a2a2a" : "#68338a" ,
+    color:  "#e6edf3",
     border: darkMode ? "1px solid #30363d" : "1px solid #e1e4e8",
   };
-    const inputkastyle = {
-        width: "100%",
-        padding: "12px",
-        borderRadius: "8px",
-        border: darkMode ? "2px solid #555" : "2px solid #ccc",
-        backgroundColor: darkMode ? "#2a2a2a" : "#fff",
-        color: darkMode ? "#fff" : "#000",
-        fontSize: "14px",
-        marginBottom: "10px",
-      }
 
-  return (
-    <div style={containerStyle}>
-          <h3 style={headingStyle}>{translations[language].jsonValidator}</h3>
-          {/* api input ke liye */}
+  const inputkastyle = {
+    width: "90%",
+    padding: "16px",
+    borderRadius: "8px 0px 0px 8px",
+    backgroundColor: darkMode ? "#2a2a2a" : "#68338a",
+    border: "none",
+    color: "#fff",
+    fontSize: "14px",
+    marginBottom: "10px",
+    outline: "none",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+  };
+  const inputkabutton = {
+    backgroundColor: darkMode ? "#2a2a2a" : "#68338a",
+    color: "white",
+    border: "none",
+    padding: "16px 16px",
+    borderRadius: "0px 8px 8px 0px",
+    cursor: "pointer",
+    fontWeight: "600",
+    fontSize: "14px",
+    // transition: "all 0.2s ease",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+  };
+
+    return (
+        //   containerStyle ye style name neeche wale div ka hai 
+        
+    <div>
+      <h3 style={headingStyle}>{translations[language].jsonValidator}</h3>
+      {/* api input ke liye */}
       <div style={{ marginBottom: "20px" }}>
         <input
+          className="purple-placeholder"
           type="text"
           placeholder="Enter API URL here"
           value={input}
           onChange={(e) => setinput(e.target.value)}
           style={inputkastyle}
         />
-        <button onClick={testApiManually} style={buttonStyle("#9C27B0")}>
+        <button onClick={testApiManually} style={inputkabutton}>
           Test API
         </button>
       </div>
 
       <textarea
+        className="purple-placeholder"
         placeholder={translations[language].jsonPlaceholder}
         value={jsonInput}
         onChange={(e) => setJsonInput(e.target.value)}
@@ -247,13 +274,13 @@ const JsonValidator = ({ query, darkMode, language, translations }) => {
       />
 
       <div style={buttonContainerStyle}>
-        <button onClick={validateJson} style={buttonStyle("#2196F3")}>
+        <button onClick={validateJson} style={buttonStyle}>
           {translations[language].validateButton}
         </button>
-        <button onClick={beautifyJson} style={buttonStyle("#FF9800")}>
+        <button onClick={beautifyJson} style={buttonStyle}>
           {translations[language].beautifyButton}
         </button>
-        <button onClick={clearJson} style={buttonStyle("#f44336")}>
+        <button onClick={clearJson} style={buttonStyle}>
           {translations[language].clearJsonButton}
         </button>
       </div>
@@ -268,13 +295,13 @@ const JsonValidator = ({ query, darkMode, language, translations }) => {
             <h4
               style={{
                 margin: 0,
-                color: darkMode ? "#ffffff" : "#333",
+                color: "#ffffff",
                 fontSize: "16px",
               }}
             >
               {translations[language].beautifiedJson}
             </h4>
-            <button onClick={copyBeautifiedJson} style={buttonStyle("#4CAF50")}>
+            <button onClick={copyBeautifiedJson} style={buttonStyle}>
               {translations[language].copyJsonButton}
             </button>
           </div>
