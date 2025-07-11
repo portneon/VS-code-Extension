@@ -7,6 +7,7 @@ import {
   Sun,
   Moon,
   Languages,
+  BrushCleaning,
 } from "lucide-react";
 
 import LanguageSelector from "./components/LanguageSelector";
@@ -19,6 +20,7 @@ import StackOverflow from "./components/StackOverflow";
 import ThemeToggle from "./components/ThemeToggle";
 import InternetCheck from "./components/ConnectionStatus";
 import TreeView from "./components/TreeView";
+import CleanupTool from "./components/CleanupTool.jsx";
 
 import { translations } from "./utils/translations.js";
 import { useNotes } from "./utils/useNotes.js";
@@ -158,6 +160,12 @@ const App = () => {
             />
           </div>
         );
+      case "cleanup":
+        return (
+          <div className="tool-container">
+            <CleanupTool {...commonProps} />
+          </div>
+        );
       default:
         return renderDashboard();
     }
@@ -191,6 +199,12 @@ const App = () => {
             <h3 className="tool-title">Stack Overflow</h3>
           </div>
         </div>
+        <div onClick={() => handleToolClick("cleanup")} className="tool-card">
+          <div className="tool-card-content">
+            <BrushCleaning className="tool-icon" />
+            <h3 className="tool-title">Cleanup Tool</h3>
+          </div>
+        </div>
       </div>
 
       <div className="dev-tips-section">
@@ -216,7 +230,11 @@ const App = () => {
         <div className="header">
           <div className="header-left">
             {/* Logo */}
-            <img src={window.logoUri || "./logoo.png"} alt="Logo" className="logo-img" />
+            <img
+              src={window.logoUri || "./logoo.png"}
+              alt="Logo"
+              className="logo-img"
+            />
 
             <h1 className="app-title">
               {translations[language]?.title || "StackMate"}
@@ -305,7 +323,10 @@ const App = () => {
             {showSuggestions && (
               <ul className="trigger-suggestions">
                 {["@stack", "@json", "@notes"].map((trigger) => (
-                  <li key={trigger} onClick={() => handleSuggestionClick(trigger)}>
+                  <li
+                    key={trigger}
+                    onClick={() => handleSuggestionClick(trigger)}
+                  >
                     {trigger}
                   </li>
                 ))}
