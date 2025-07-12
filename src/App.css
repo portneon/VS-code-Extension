@@ -508,3 +508,7 @@ body {
 .app-container.dark-mode .highlighted-trigger {
   color: #8b5cf6;
 }
+.purple-placeholder::placeholder {
+  color: #ffffff; 
+  opacity: 1;   
+}

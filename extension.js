@@ -2,12 +2,17 @@ const vscode = require("vscode");
 const path = require("path");
 const https = require("https");
 
+let panel; 
 function activate(context) {
   // Show React Webview Command
   let showWebviewCommand = vscode.commands.registerCommand(
     "extension.showReactWebview",
     function () {
-      const panel = vscode.window.createWebviewPanel(
+      if (panel) {
+        panel.reveal();
+        return 
+      }
+      panel = vscode.window.createWebviewPanel(
         "reactWebview",
         "React Webview",
         vscode.ViewColumn.One,
@@ -22,16 +27,34 @@ function activate(context) {
       );
 
       panel.webview.html = getWebviewContent(panel);
+      const savedNotes = context.globalState.get("my-vscode-notes", []);
+      setTimeout(() => {
+        panel.webview.postMessage({
+          command: "loadNotes",
+          payload: savedNotes,
+        });
+      }, 200); 
+      
+
 
       panel.webview.onDidReceiveMessage(
         (message) => {
           if (message.command === "alert") {
             vscode.window.showInformationMessage(message.text);
           }
+      
+          // notes ko global state me save kare hai
+          if (message.command === "saveNotes") {
+            context.globalState.update("my-vscode-notes", message.payload);
+          }
         },
         undefined,
         context.subscriptions
       );
+      panel.onDidDispose(() => {
+        panel = null;
+      });
+      
     }
   );
 
