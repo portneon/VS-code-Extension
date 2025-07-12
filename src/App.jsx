@@ -19,7 +19,7 @@ import ColorPicker from "./components/ColorPicker";
 import StackOverflow from "./components/StackOverflow";
 import ThemeToggle from "./components/ThemeToggle";
 import InternetCheck from "./components/ConnectionStatus";
-import TreeView from "./components/TreeView";
+
 import CleanupTool from "./components/CleanupTool.jsx";
 
 import { translations } from "./utils/translations.js";
@@ -217,7 +217,7 @@ const App = () => {
       <div className="dev-tips-section">
         <h2 className="section-title">File Explorer</h2>
         <div className="dev-tips-container">
-          <TreeView />
+          
         </div>
       </div>
     </div>
