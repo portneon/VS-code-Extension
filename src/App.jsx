@@ -137,6 +137,7 @@ const App = () => {
               <SavedNotes
                 savedNotes={savedNotes}
                 onTogglePin={togglePin}
+                searchquery={triggerType === "notes" ? queryText : ""}
                 {...commonProps}
               />
             </div>
@@ -216,9 +217,7 @@ const App = () => {
 
       <div className="dev-tips-section">
         <h2 className="section-title">File Explorer</h2>
-        <div className="dev-tips-container">
-          
-        </div>
+        <div className="dev-tips-container"></div>
       </div>
     </div>
   );
@@ -313,12 +312,27 @@ const App = () => {
               {highlightTriggerWords(searchQuery)}
             </div>
             <textarea
-              className="search-real-input"
+              className="purple-placeholder"
               value={searchQuery}
               onChange={handleSearchChange}
               onKeyDown={handleKeyDown}
               placeholder="search with @stack @json @notes ..."
               rows={1}
+              style={{
+                position: "relative",
+                zIndex: 2,
+                width: "100%",
+                backgroundColor: "#4b2e83",
+                border: "none",
+                borderRadius: "20px",
+                outline: "none",
+                resize: "none",
+                color: "white",
+                fontSize: "16px",
+                padding: "16px 16px 16px 48px",
+                fontFamily: "inherit",
+                lineHeight: 1.5,
+              }}
             />
             {showSuggestions && (
               <ul className="trigger-suggestions">
