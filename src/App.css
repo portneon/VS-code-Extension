@@ -59,16 +59,16 @@ body {
 
 .app-title {
   background: linear-gradient(45deg, #ffffff, #e0b3ff, #c084fc, #a855f7, #8b5cf6);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-size: 32px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    text-align: center;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  text-align: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* Header Controls */
@@ -189,12 +189,14 @@ body {
 .search-wrapper {
   position: relative;
   margin-bottom: 32px;
-  background-color: #4689c850;
+  background: rgba(216, 180, 252, 0.2); 
   border-radius: 20px;
-  border-style: none !important;
-  color: rgb(230, 211, 251);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  color: #D8B4FE; 
   outline: none;
+  transition: all 0.3s ease;
 }
+
 
 .search-icon {
   position: absolute;
@@ -227,7 +229,7 @@ body {
   position: relative;
   z-index: 2;
   width: 100%;
-  background-color: #4b2e83;
+  background: transparent;  /* Updated */
   border: none;
   border-radius: 20px;
   outline: none;
@@ -482,11 +484,12 @@ body {
 
 /* Dark mode overrides for search bar and suggestions */
 .app-container.dark-mode .search-wrapper {
-  background-color: #313131;
+  background-color: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
   color: #eaeaea;
 }
 .app-container.dark-mode .search-real-input {
-  background-color: #313131;
+  background: transparent;
   color: #eaeaea;
 }
 .app-container.dark-mode .search-highlight {
