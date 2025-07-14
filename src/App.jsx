@@ -213,13 +213,7 @@ const App = () => {
           <DevTip />
         </div>
       </div>
-
-      <div className="dev-tips-section">
-        <h2 className="section-title">File Explorer</h2>
-        <div className="dev-tips-container">
-          
-        </div>
-      </div>
+      
     </div>
   );
 
