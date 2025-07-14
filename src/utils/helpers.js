@@ -1,5 +1,4 @@
 export const showMessage = (message) => {
-    // Create a temporary toast message
     const toast = document.createElement('div');
     toast.textContent = message;
     toast.style.cssText = `
