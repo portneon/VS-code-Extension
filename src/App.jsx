@@ -20,6 +20,7 @@ import StackOverflow from "./components/StackOverflow";
 import ThemeToggle from "./components/ThemeToggle";
 import InternetCheck from "./components/ConnectionStatus";
 
+
 import CleanupTool from "./components/CleanupTool.jsx";
 
 import { translations } from "./utils/translations.js";
@@ -41,10 +42,15 @@ const App = () => {
     note,
     setNote,
     savedNotes,
+    // filteredNotes,   
+    // searchTerm,
+    // setSearchTerm,
     warning,
     handleSave,
     handleClear,
     togglePin,
+    handleRenameNote,
+    handleDeleteNote,
   } = useNotes();
 
   const commonProps = { darkMode, language, translations };
@@ -133,8 +139,11 @@ const App = () => {
             </div>
             <div className="tool-container">
               <SavedNotes
-                savedNotes={savedNotes}
+                savedNotes={savedNotes} 
+                onRenameNote={handleRenameNote}
+                onDeleteNote={handleDeleteNote}
                 onTogglePin={togglePin}
+                searchquery={triggerType === "notes" ? queryText : ""}
                 {...commonProps}
               />
             </div>
@@ -210,6 +219,7 @@ const App = () => {
           <DevTip />
         </div>
       </div>
+
     </div>
   );
 
@@ -282,12 +292,27 @@ const App = () => {
               {highlightTriggerWords(searchQuery)}
             </div>
             <textarea
-              className="search-real-input"
+              className="purple-placeholder"
               value={searchQuery}
               onChange={handleSearchChange}
               onKeyDown={handleKeyDown}
               placeholder="search with @stack @json @notes ..."
               rows={1}
+              style={{
+                position: "relative",
+                zIndex: 2,
+                width: "100%",
+                backgroundColor: "#4b2e83",
+                border: "none",
+                borderRadius: "20px",
+                outline: "none",
+                resize: "none",
+                color: "white",
+                fontSize: "16px",
+                padding: "16px 16px 16px 48px",
+                fontFamily: "inherit",
+                lineHeight: 1.5,
+              }}
             />
             {showSuggestions && (
               <ul className="trigger-suggestions">
