@@ -87,7 +87,17 @@ export const useNotes = () => {
     });
   };
 
+
+  const handleDeleteNote = (id) => {
+    const updated = savedNotes.filter((note) => note.id !== id);
+    setSavedNotes(updated);
   
+    vscode.postMessage({
+      command: "saveNotes",
+      payload: updated,
+    });
+  };
+
   
 
   const filteredNotes = savedNotes.filter((note) =>
@@ -106,6 +116,7 @@ export const useNotes = () => {
     handleClear,
     togglePin,
     handleRenameNote,
-    // handleDeleteNote,
+    handleDeleteNote,
+
   };
 };
