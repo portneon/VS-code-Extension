@@ -20,6 +20,7 @@ import StackOverflow from "./components/StackOverflow";
 import ThemeToggle from "./components/ThemeToggle";
 import InternetCheck from "./components/ConnectionStatus";
 
+
 import CleanupTool from "./components/CleanupTool.jsx";
 
 import { translations } from "./utils/translations.js";
@@ -41,10 +42,21 @@ const App = () => {
     note,
     setNote,
     savedNotes,
+
+   
+
+    // filteredNotes,   
+    // searchTerm,
+    // setSearchTerm,
+
     warning,
     handleSave,
     handleClear,
     togglePin,
+    handleRenameNote,
+
+    handleDeleteNote,
+
   } = useNotes();
 
   const commonProps = { darkMode, language, translations };
@@ -133,7 +145,13 @@ const App = () => {
             </div>
             <div className="tool-container">
               <SavedNotes
-                savedNotes={savedNotes}
+                savedNotes={savedNotes} 
+                onRenameNote={handleRenameNote}
+
+                // onDeleteNote={handleDeleteNote}
+
+                onDeleteNote={handleDeleteNote}
+
                 onTogglePin={togglePin}
                 searchquery={triggerType === "notes" ? queryText : ""}
                 {...commonProps}

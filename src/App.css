@@ -374,18 +374,15 @@ body {
 .search-wrapper {
   position: relative;
   margin-bottom: 32px;
-  background: rgba(70, 137, 200, 0.3);
+  background: rgba(216, 180, 252, 0.2); 
   border-radius: 20px;
   border: 2px solid rgba(255, 255, 255, 0.1);
-  color: rgb(230, 211, 251);
+  color: #D8B4FE; 
   outline: none;
   transition: all 0.3s ease;
 }
 
-.search-wrapper:focus-within {
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-}
+
 
 .search-icon {
   position: absolute;
@@ -413,6 +410,7 @@ body {
   z-index: 1;
   outline: none;
 }
+
 
 
 .search-real-input:focus {
@@ -747,6 +745,37 @@ body {
     max-width: 90vw;
   }
 
+
+/* Dark mode overrides for search bar and suggestions */
+.app-container.dark-mode .search-wrapper {
+  background-color: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  color: #eaeaea;
+}
+.app-container.dark-mode .search-real-input {
+  background: transparent;
+  color: #eaeaea;
+}
+.app-container.dark-mode .search-highlight {
+  color: #eaeaea;
+}
+.app-container.dark-mode .trigger-suggestions {
+  background: #232323;
+  color: #eaeaea;
+  border: 1px solid #393e46;
+}
+.app-container.dark-mode .trigger-suggestions li {
+  background-color: #232323;
+  color: #eaeaea;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.app-container.dark-mode .trigger-suggestions li:last-child {
+  border-bottom: none;
+}
+.app-container.dark-mode .highlighted-trigger {
+  color: #8b5cf6;
+}
+
   .control-button {
     width: 44px;
     height: 44px;
@@ -780,3 +809,4 @@ body {
     height: 40px;
   }
 }
+

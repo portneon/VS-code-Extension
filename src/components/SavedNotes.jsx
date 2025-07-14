@@ -5,23 +5,27 @@ const SavedNotes = ({
   savedNotes,
   onTogglePin,
   onRenameNote,
-  onDeleteNote,
+    onDeleteNote,
+  onEditNoteContent,
   darkMode,
-  searchquery,
+  searchquery = "", //starting me undefined rahe se  issue aa sakta hai because we are using "startswith()"
 }) => {
   const [openMenuId, setOpenMenuId] = useState(null);
-  const [query, setquery] = useState("");
-  const [suggestions, setsuggestions] = useState([]);
+  const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [editingTitleId, setEditingTitleId] = useState(null);
+  const [newTitle, setNewTitle] = useState("");
+  const [editingNoteId, setEditingNoteId] = useState(null);
+  const [editedContent, setEditedContent] = useState("");
 
   const menuRefs = useRef({});
 
   useEffect(() => {
     const handler = (e) => {
-      const openId = openMenuId;
       if (
-        openId &&
-        menuRefs.current[openId] &&
-        !menuRefs.current[openId].contains(e.target)
+        openMenuId &&
+        menuRefs.current[openMenuId] &&
+        !menuRefs.current[openMenuId].contains(e.target)
       ) {
         setOpenMenuId(null);
       }
@@ -30,85 +34,46 @@ const SavedNotes = ({
     return () => window.removeEventListener("click", handler);
   }, [openMenuId]);
 
+  const renameRef = useRef(null);
+
   useEffect(() => {
-    const queryInput = searchquery.startsWith("@notes")
+    const handleClickOutside = (e) => {
+      if (
+        editingTitleId &&
+        renameRef.current &&
+        !renameRef.current.contains(e.target)
+      ) {
+        setEditingTitleId(null);
+      }
+    };
+
+    window.addEventListener("mousedown", handleClickOutside);
+    return () => window.removeEventListener("mousedown", handleClickOutside);
+  }, [editingTitleId]);
+
+  useEffect(() => {
+    const cleanedQuery = searchquery.startsWith("@notes")
       ? searchquery.replace("@notes", "").trim()
       : searchquery.trim();
-
-    setquery(queryInput);
+    setQuery(cleanedQuery);
   }, [searchquery]);
+
   useEffect(() => {
     if (query.trim() === "") {
-      setsuggestions([]);
+      setSuggestions([]);
       return;
     }
-
     const matches = savedNotes
       .filter((note) => note.title?.toLowerCase().includes(query.toLowerCase()))
       .map((note) => note.title);
-
-    setsuggestions(matches.slice(0, 5));
+    setSuggestions(matches.slice(0, 5));
   }, [query, savedNotes]);
 
-  const containerStyle = {
-    marginTop: "20px",
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-    gap: "20px",
-  };
-
-  const noteBoxStyle = {
-    position: "relative",
-    height: "200px",
-    padding: "15px",
-    borderRadius: "10px",
-    backgroundColor: darkMode ? "#1e1e1e" : "#68338a",
-    color: darkMode ? "#eee" : "#eee",
-    border: darkMode ? "1px solid #333" : "1px solid #ccc",
-    boxShadow: darkMode
-      ? "0 2px 6px rgba(255,255,255,0.05)"
-      : "0 2px 8px rgba(0,0,0,0.1)",
-    overflow: "hidden",
-  };
-
-  const starStyle = (pinned) => ({
-    position: "absolute",
-    top: "10px",
-    left: "10px",
-    fontSize: "18px",
-    cursor: "pointer",
-    color: pinned ? "#ffd700" : darkMode ? "#888" : "#555",
-  });
-
-  const menuButtonStyle = {
-    position: "absolute",
-    top: "10px",
-    right: "10px",
-    background: "none",
-    border: "none",
-    color: "#ccc",
-    fontSize: "18px",
-    cursor: "pointer",
-  };
-
-  const menuStyle = {
-    position: "absolute",
-    top: "35px",
-    right: "10px",
-    background: darkMode ? "#333" : "#f9f9f9",
-    border: "1px solid #aaa",
-    borderRadius: "6px",
-    padding: "5px 0",
-    zIndex: 100,
-    boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-  };
-
-  const menuItemStyle = {
-    padding: "8px 15px",
-    cursor: "pointer",
-    whiteSpace: "nowrap",
-    fontSize: "14px",
-    color: darkMode ? "#eee" : "#000",
+  const handleTitleRename = (id) => {
+    if (newTitle.trim()) {
+      onRenameNote(id, newTitle.trim());
+    }
+    setEditingTitleId(null);
   };
 
   const downloadAsPdf = (content, title) => {
@@ -124,27 +89,8 @@ const SavedNotes = ({
     const a = document.createElement("a");
     a.href = url;
     a.download = `${title || "note"}.txt`;
-    const event = new MouseEvent("click", {
-      view: window,
-      bubbles: true,
-      cancelable: true,
-    });
-    a.dispatchEvent(event);
-  };
-  const textAreaStyle = {
-    width: "100%",
-    height: "50px",
-    padding: "10px",
-    fontSize: "16px",
-    borderRadius: "6px",
-    resize: "vertical",
-    fontFamily: "monospace",
-    backgroundColor: darkMode ? "#1e1e1e" : "#68338a",
-
-    color: darkMode ? "#eee" : "#eee",
-      outline: 'none',
-      border:"none",
-      boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -155,8 +101,19 @@ const SavedNotes = ({
           type="text"
           placeholder="Search notes..."
           value={query}
-          onChange={(e) => setquery(e.target.value)}
-          style={textAreaStyle}
+          onChange={(e) => setQuery(e.target.value)}
+          style={{
+            width: "100%",
+            height: "50px",
+            padding: "10px",
+            fontSize: "16px",
+            borderRadius: "6px",
+            backgroundColor: darkMode ? "#1e1e1e" : "#68338a",
+            color: "#eee",
+            border: "1px solid white",
+            outline: "none",
+            boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+          }}
         />
         {suggestions.length > 0 && (
           <ul
@@ -181,7 +138,7 @@ const SavedNotes = ({
                   borderBottom: "1px solid #eee",
                   cursor: "pointer",
                 }}
-                onClick={() => setquery(s)}
+                onClick={() => setQuery(s)}
               >
                 {s}
               </li>
@@ -189,7 +146,15 @@ const SavedNotes = ({
           </ul>
         )}
       </div>
-      <div style={containerStyle}>
+
+      <div
+        style={{
+          marginTop: "20px",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+          gap: "20px",
+        }}
+      >
         {savedNotes
           .filter(
             (note) =>
@@ -197,16 +162,64 @@ const SavedNotes = ({
               note.content?.toLowerCase().includes(query.toLowerCase())
           )
           .map((note) => (
-            <div key={note.id} style={noteBoxStyle}>
+            <div
+              key={note.id}
+              style={{
+                position: "relative",
+                height: "220px",
+                padding: "15px",
+                borderRadius: "10px",
+                backgroundColor: darkMode ? "#1e1e1e" : "#68338a",
+                color: "#eee",
+                border: darkMode ? "1px solid #333" : "1px solid #ccc",
+                boxShadow: darkMode
+                  ? "0 2px 6px rgba(255,255,255,0.05)"
+                  : "0 2px 8px rgba(0,0,0,0.1)",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
               <span
-                style={starStyle(note.pinned)}
+                style={{
+                  position: "absolute",
+                  top: "10px",
+                  left: "10px",
+                  fontSize: "18px",
+                  cursor: "pointer",
+                  color: note.pinned ? "#ffd700" : darkMode ? "#888" : "#555",
+                }}
                 onClick={() => onTogglePin(note.id)}
               >
                 {note.pinned ? "⭐" : "☆"}
               </span>
+              <span
+                onClick={() => {
+                  setEditingNoteId(note.id);
+                  setEditedContent(note.content);
+                }}
+                style={{
+                  position: "absolute",
+                  bottom: "10px",
+                  right: "10px",
+                  cursor: "pointer",
+                  fontSize: "18px",
+                }}
+              >
+                ✏️
+              </span>
 
               <button
-                style={menuButtonStyle}
+                style={{
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px",
+                  background: "none",
+                  border: "none",
+                  color: "#ccc",
+                  fontSize: "18px",
+                  cursor: "pointer",
+                }}
                 onClick={(e) => {
                   e.stopPropagation();
                   setOpenMenuId(openMenuId === note.id ? null : note.id);
@@ -217,29 +230,67 @@ const SavedNotes = ({
 
               {openMenuId === note.id && (
                 <div
-                  style={menuStyle}
+                  style={{
+                    position: "absolute",
+                    top: "35px",
+                    right: "10px",
+                    background: darkMode ? "#333" : "#f9f9f9",
+                    border: "1px solid #aaa",
+                    borderRadius: "6px",
+                    padding: "5px 0",
+                    zIndex: 100,
+                    boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+                  }}
                   ref={(el) => (menuRefs.current[note.id] = el)}
                 >
                   <div
-                    style={menuItemStyle}
+                    style={{
+                      padding: "8px 15px",
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                      fontSize: "14px",
+                      color: darkMode ? "#eee" : "#000",
+                    }}
+                    onClick={() => {
+                      setEditingTitleId(note.id);
+                      setNewTitle(note.title);
+                      setOpenMenuId(null);
+                    }}
+                  >
+                    Rename
+                  </div>
+                  <div
+                    style={{
+                      padding: "8px 15px",
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                      fontSize: "14px",
+                      color: darkMode ? "#eee" : "#000",
+                    }}
                     onClick={() => downloadAsPdf(note.content, note.title)}
                   >
                     Download PDF
                   </div>
                   <div
-                    style={menuItemStyle}
+                    style={{
+                      padding: "8px 15px",
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                      fontSize: "14px",
+                      color: darkMode ? "#eee" : "#000",
+                    }}
                     onClick={() => downloadAsTxt(note.content, note.title)}
                   >
                     Download TXT
                   </div>
                   <div
-                    style={menuItemStyle}
-                    onClick={() => onRenameNote(note.id)}
-                  >
-                    Rename
-                  </div>
-                  <div
-                    style={menuItemStyle}
+                    style={{
+                      padding: "8px 15px",
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                      fontSize: "14px",
+                      color: darkMode ? "#eee" : "#000",
+                    }}
                     onClick={() => onDeleteNote(note.id)}
                   >
                     Delete
@@ -249,18 +300,141 @@ const SavedNotes = ({
 
               <div
                 style={{
+                  flexGrow: 1,
                   whiteSpace: "pre-wrap",
                   overflowY: "auto",
-                  maxHeight: "120px",
                   paddingTop: "20px",
                   paddingLeft: "5px",
                 }}
               >
                 {note.content}
               </div>
+
+              <div
+                style={{
+                  marginTop: "10px",
+                  textAlign: "center",
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                  borderTop: "1px solid rgba(255,255,255,0.2)",
+                  paddingTop: "5px",
+                  cursor: "pointer",
+                }}
+                onDoubleClick={() => {
+                  setEditingTitleId(note.id);
+                  setNewTitle(note.title);
+                }}
+              >
+                {editingTitleId === note.id ? (
+                  <div ref={renameRef}>
+                    <input
+                      value={newTitle}
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      onBlur={() => handleTitleRename(note.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleTitleRename(note.id);
+                        if (e.key === "Escape") setEditingTitleId(null);
+                      }}
+                      autoFocus
+                      style={{
+                        width: "80%",
+                        padding: "4px",
+                        borderRadius: "4px",
+                        border: "1px solid #ccc",
+                        fontSize: "14px",
+                      }}
+                    />
+                  </div>
+                ) : (
+                  note.title
+                )}
+              </div>
             </div>
           ))}
+          </div>
+          {editingNoteId && (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      backgroundColor: "rgba(0,0,0,0.8)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 9999,
+    }}
+    onClick={() => setEditingNoteId(null)}
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        width: "90%",
+        maxWidth: "700px",
+        height: "80vh",
+        background: darkMode ? "#1e1e1e" : "#fff",
+        color: darkMode ? "#fff" : "#000",
+        padding: "20px",
+        borderRadius: "10px",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <h3 style={{ marginBottom: "10px" }}>Edit Note</h3>
+      <textarea
+        value={editedContent}
+        onChange={(e) => setEditedContent(e.target.value)}
+        style={{
+          flexGrow: 1,
+          resize: "none",
+          fontSize: "16px",
+          padding: "10px",
+          background: darkMode ? "#333" : "#f0f0f0",
+          color: darkMode ? "#fff" : "#000",
+          border: "1px solid #aaa",
+          borderRadius: "6px",
+        }}
+      />
+      <div style={{ marginTop: "15px", textAlign: "right" }}>
+        <button
+          onClick={() => {
+            onEditNoteContent(editingNoteId, editedContent);
+            setEditingNoteId(null);
+          }}
+          style={{
+            padding: "8px 16px",
+            marginRight: "10px",
+            background: "#4caf50",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
+        >
+          Save
+        </button>
+        <button
+          onClick={() => setEditingNoteId(null)}
+          style={{
+            padding: "8px 16px",
+            background: "#999",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
+        >
+          Cancel
+        </button>
       </div>
+    </div>
+  </div>
+)}
+
     </>
   );
 };

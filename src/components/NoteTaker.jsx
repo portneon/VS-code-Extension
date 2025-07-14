@@ -19,9 +19,7 @@ const NoteTaker = ({
     resize: "vertical",
     fontFamily: "monospace",
     backgroundColor: darkMode ? "#1e1e1e" : "#68338a",
-    
-
-    color: darkMode ? "#eee" : "#eee",
+    color: "#eee",
     border: darkMode ? "1px solid #555" : "1px solid #ccc",
   };
 
@@ -34,7 +32,7 @@ const NoteTaker = ({
     alignItems: "center",
   };
 
-  const ButtonStyle = {
+  const buttonStyle = {
     backgroundColor: darkMode ? "#2a2a2a" : "#68338a",
     color: "white",
     border: "none",
@@ -42,8 +40,6 @@ const NoteTaker = ({
     borderRadius: "6px",
     cursor: "pointer",
   };
-
-  
 
   const warningStyle = {
     color: "#cc3300",
@@ -63,10 +59,10 @@ const NoteTaker = ({
       />
 
       <div style={buttonContainerStyle}>
-        <button onClick={onSave} style={ButtonStyle}>
+        <button onClick={onSave} style={buttonStyle}>
           {translations[language].saveButton}
         </button>
-        <button onClick={onClear} style={ButtonStyle}>
+        <button onClick={onClear} style={buttonStyle}>
           {translations[language].clearButton}
         </button>
       </div>

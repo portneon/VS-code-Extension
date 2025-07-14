@@ -4,7 +4,6 @@ import { showMessage } from "./helpers.js";
 
 export const useNotes = () => {
   const [note, setNote] = useState("");
-  const [title, setTitle] = useState("");
   const [savedNotes, setSavedNotes] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [warning, setWarning] = useState("");
@@ -18,11 +17,8 @@ export const useNotes = () => {
     };
 
     window.addEventListener("message", handleMessage);
-    return () => {
-      window.removeEventListener("message", handleMessage);
-    };
+    return () => window.removeEventListener("message", handleMessage);
   }, []);
-
 
   const handleSave = () => {
     if (note.trim() === "") {
@@ -30,14 +26,10 @@ export const useNotes = () => {
       return;
     }
 
-    if (title.trim() === "") {
-      setWarning("Please enter a title.");
-      return;
-    }
-
+    const firstWord = note.trim().split(/\s+/)[0];
     const newNote = {
       id: Date.now(),
-      title: title.trim(),
+      title: firstWord,
       content: note,
       pinned: false,
     };
@@ -50,7 +42,6 @@ export const useNotes = () => {
 
     setSavedNotes(updatedNotes);
     setNote("");
-    setTitle("");
     setWarning("");
     showMessage("Note Saved!");
 
@@ -60,17 +51,14 @@ export const useNotes = () => {
     });
   };
 
-  
   const handleClear = () => {
     setSavedNotes([]);
     setWarning("");
-
     vscode.postMessage({
       command: "saveNotes",
       payload: [],
     });
   };
-
 
   const togglePin = (id) => {
     const updated = savedNotes
@@ -85,25 +73,12 @@ export const useNotes = () => {
     });
   };
 
-  
-  const handleRenameNote = (id) => {
-    const newTitle = prompt("Enter new title:");
-    if (newTitle && newTitle.trim()) {
-      const updated = savedNotes.map((note) =>
-        note.id === id ? { ...note, title: newTitle.trim() } : note
-      );
-      setSavedNotes(updated);
+  const handleRenameNote = (id, newTitle) => {
+    if (!newTitle || !newTitle.trim()) return;
 
-      vscode.postMessage({
-        command: "saveNotes",
-        payload: updated,
-      });
-    }
-  };
-
-
-  const handleDeleteNote = (id) => {
-    const updated = savedNotes.filter((note) => note.id !== id);
+    const updated = savedNotes.map((note) =>
+      note.id === id ? { ...note, title: newTitle.trim() } : note
+    );
     setSavedNotes(updated);
 
     vscode.postMessage({
@@ -112,16 +87,35 @@ export const useNotes = () => {
     });
   };
 
+  const handleDeleteNote = (id) => {
+    const updated = savedNotes.filter((note) => note.id !== id);
+    setSavedNotes(updated);
   
+    vscode.postMessage({
+      command: "saveNotes",
+      payload: updated,
+    });
+  };
+  
+
   const filteredNotes = savedNotes.filter((note) =>
     note.title?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+    
+  const handleEditNote = (id, newContent) => {
+    const updated = savedNotes.map((note) =>
+      note.id === id ? { ...note, content: newContent } : note
+    );
+    setSavedNotes(updated);
+    vscode.postMessage({
+      command: "saveNotes",
+      payload: updated,
+    });
+  };
 
   return {
     note,
     setNote,
-    title,
-    setTitle,
     savedNotes,
     filteredNotes,
     searchTerm,
@@ -131,6 +125,7 @@ export const useNotes = () => {
     handleClear,
     togglePin,
     handleRenameNote,
-    handleDeleteNote,
+      handleDeleteNote,
+    handleEditNote,
   };
 };
