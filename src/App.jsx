@@ -43,13 +43,15 @@ const App = () => {
     note,
     setNote,
     savedNotes,
-   
+    // filteredNotes,   
+    // searchTerm,
+    // setSearchTerm,
     warning,
     handleSave,
     handleClear,
     togglePin,
     handleRenameNote,
-    // handleDeleteNote,
+    handleDeleteNote,
   } = useNotes();
 
   const commonProps = { darkMode, language, translations };
@@ -141,7 +143,7 @@ const App = () => {
               <SavedNotes
                 savedNotes={savedNotes} 
                 onRenameNote={handleRenameNote}
-                // onDeleteNote={handleDeleteNote}
+                onDeleteNote={handleDeleteNote}
                 onTogglePin={togglePin}
                 searchquery={triggerType === "notes" ? queryText : ""}
                 {...commonProps}
