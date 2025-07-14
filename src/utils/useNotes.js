@@ -101,6 +101,17 @@ export const useNotes = () => {
   const filteredNotes = savedNotes.filter((note) =>
     note.title?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+    
+  const handleEditNote = (id, newContent) => {
+    const updated = savedNotes.map((note) =>
+      note.id === id ? { ...note, content: newContent } : note
+    );
+    setSavedNotes(updated);
+    vscode.postMessage({
+      command: "saveNotes",
+      payload: updated,
+    });
+  };
 
   return {
     note,
@@ -114,6 +125,7 @@ export const useNotes = () => {
     handleClear,
     togglePin,
     handleRenameNote,
-    handleDeleteNote,
+      handleDeleteNote,
+    handleEditNote,
   };
 };
