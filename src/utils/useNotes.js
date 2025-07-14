@@ -87,6 +87,7 @@ export const useNotes = () => {
     });
   };
 
+
   const handleDeleteNote = (id) => {
     const updated = savedNotes.filter((note) => note.id !== id);
     setSavedNotes(updated);
@@ -96,6 +97,7 @@ export const useNotes = () => {
       payload: updated,
     });
   };
+
   
 
   const filteredNotes = savedNotes.filter((note) =>
@@ -115,5 +117,6 @@ export const useNotes = () => {
     togglePin,
     handleRenameNote,
     handleDeleteNote,
+
   };
 };
