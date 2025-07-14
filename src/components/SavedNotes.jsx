@@ -5,7 +5,8 @@ const SavedNotes = ({
   savedNotes,
   onTogglePin,
   onRenameNote,
-  onDeleteNote,
+    onDeleteNote,
+  onEditNoteContent,
   darkMode,
   searchquery = "", //starting me undefined rahe se  issue aa sakta hai because we are using "startswith()"
 }) => {
@@ -14,6 +15,8 @@ const SavedNotes = ({
   const [suggestions, setSuggestions] = useState([]);
   const [editingTitleId, setEditingTitleId] = useState(null);
   const [newTitle, setNewTitle] = useState("");
+  const [editingNoteId, setEditingNoteId] = useState(null);
+  const [editedContent, setEditedContent] = useState("");
 
   const menuRefs = useRef({});
 
@@ -93,8 +96,8 @@ const SavedNotes = ({
   return (
     <>
       <div style={{ marginBottom: "15px", position: "relative" }}>
-              <input
-                  className="purple-placeholder"
+        <input
+          className="purple-placeholder"
           type="text"
           placeholder="Search notes..."
           value={query}
@@ -189,6 +192,21 @@ const SavedNotes = ({
                 onClick={() => onTogglePin(note.id)}
               >
                 {note.pinned ? "⭐" : "☆"}
+              </span>
+              <span
+                onClick={() => {
+                  setEditingNoteId(note.id);
+                  setEditedContent(note.content);
+                }}
+                style={{
+                  position: "absolute",
+                  bottom: "10px",
+                  right: "10px",
+                  cursor: "pointer",
+                  fontSize: "18px",
+                }}
+              >
+                ✏️
               </span>
 
               <button
@@ -308,33 +326,115 @@ const SavedNotes = ({
                 }}
               >
                 {editingTitleId === note.id ? (
-                 <div ref={renameRef}>
-                 <input
-                   value={newTitle}
-                   onChange={(e) => setNewTitle(e.target.value)}
-                   onBlur={() => handleTitleRename(note.id)}
-                   onKeyDown={(e) => {
-                     if (e.key === "Enter") handleTitleRename(note.id);
-                     if (e.key === "Escape") setEditingTitleId(null);
-                   }}
-                   autoFocus
-                   style={{
-                     width: "80%",
-                     padding: "4px",
-                     borderRadius: "4px",
-                     border: "1px solid #ccc",
-                     fontSize: "14px",
-                   }}
-                 />
-               </div>
-               
+                  <div ref={renameRef}>
+                    <input
+                      value={newTitle}
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      onBlur={() => handleTitleRename(note.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleTitleRename(note.id);
+                        if (e.key === "Escape") setEditingTitleId(null);
+                      }}
+                      autoFocus
+                      style={{
+                        width: "80%",
+                        padding: "4px",
+                        borderRadius: "4px",
+                        border: "1px solid #ccc",
+                        fontSize: "14px",
+                      }}
+                    />
+                  </div>
                 ) : (
                   note.title
                 )}
               </div>
             </div>
           ))}
+          </div>
+          {editingNoteId && (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      backgroundColor: "rgba(0,0,0,0.8)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 9999,
+    }}
+    onClick={() => setEditingNoteId(null)}
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        width: "90%",
+        maxWidth: "700px",
+        height: "80vh",
+        background: darkMode ? "#1e1e1e" : "#fff",
+        color: darkMode ? "#fff" : "#000",
+        padding: "20px",
+        borderRadius: "10px",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <h3 style={{ marginBottom: "10px" }}>Edit Note</h3>
+      <textarea
+        value={editedContent}
+        onChange={(e) => setEditedContent(e.target.value)}
+        style={{
+          flexGrow: 1,
+          resize: "none",
+          fontSize: "16px",
+          padding: "10px",
+          background: darkMode ? "#333" : "#f0f0f0",
+          color: darkMode ? "#fff" : "#000",
+          border: "1px solid #aaa",
+          borderRadius: "6px",
+        }}
+      />
+      <div style={{ marginTop: "15px", textAlign: "right" }}>
+        <button
+          onClick={() => {
+            onEditNoteContent(editingNoteId, editedContent);
+            setEditingNoteId(null);
+          }}
+          style={{
+            padding: "8px 16px",
+            marginRight: "10px",
+            background: "#4caf50",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
+        >
+          Save
+        </button>
+        <button
+          onClick={() => setEditingNoteId(null)}
+          style={{
+            padding: "8px 16px",
+            background: "#999",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
+        >
+          Cancel
+        </button>
       </div>
+    </div>
+  </div>
+)}
+
     </>
   );
 };

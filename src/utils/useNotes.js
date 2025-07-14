@@ -87,7 +87,6 @@ export const useNotes = () => {
     });
   };
 
-
   const handleDeleteNote = (id) => {
     const updated = savedNotes.filter((note) => note.id !== id);
     setSavedNotes(updated);
@@ -97,12 +96,22 @@ export const useNotes = () => {
       payload: updated,
     });
   };
-
   
 
   const filteredNotes = savedNotes.filter((note) =>
     note.title?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+    
+  const handleEditNote = (id, newContent) => {
+    const updated = savedNotes.map((note) =>
+      note.id === id ? { ...note, content: newContent } : note
+    );
+    setSavedNotes(updated);
+    vscode.postMessage({
+      command: "saveNotes",
+      payload: updated,
+    });
+  };
 
   return {
     note,
@@ -116,7 +125,7 @@ export const useNotes = () => {
     handleClear,
     togglePin,
     handleRenameNote,
-    handleDeleteNote,
-
+      handleDeleteNote,
+    handleEditNote,
   };
 };
