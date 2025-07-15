@@ -5,7 +5,7 @@ export const showMessage = (message) => {
       position: fixed;
       top: 20px;
       right: 20px;
-      background: #4CAF50;
+      background: #0c021f;
       color: white;
       padding: 12px 20px;
       border-radius: 6px;

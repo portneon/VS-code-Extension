@@ -12,7 +12,7 @@ const NoteTaker = ({
 }) => {
   const textAreaStyle = {
     width: "100%",
-    height: "100px",
+    minHeight: "100px",
     padding: "10px",
     fontSize: "16px",
     borderRadius: "6px",
@@ -55,7 +55,14 @@ const NoteTaker = ({
         placeholder={translations[language].placeholder}
         value={note}
         onChange={(e) => setNote(e.target.value)}
-        style={textAreaStyle}
+        onInput={(e) => {
+          e.target.style.height = "auto";
+          e.target.style.height = e.target.scrollHeight + "px";
+        }}
+        style={{
+          ...textAreaStyle,
+          overflow: "hidden",
+        }}
       />
 
       <div style={buttonContainerStyle}>

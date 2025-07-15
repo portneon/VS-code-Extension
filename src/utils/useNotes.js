@@ -89,7 +89,8 @@ export const useNotes = () => {
 
   const handleDeleteNote = (id) => {
     const updated = savedNotes.filter((note) => note.id !== id);
-    setSavedNotes(updated);
+      setSavedNotes(updated);
+      showMessage("Note Deleted !")
   
     vscode.postMessage({
       command: "saveNotes",

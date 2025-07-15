@@ -5,10 +5,10 @@ const SavedNotes = ({
   savedNotes,
   onTogglePin,
   onRenameNote,
-    onDeleteNote,
+  onDeleteNote,
   onEditNoteContent,
   darkMode,
-  searchquery = "", //starting me undefined rahe se  issue aa sakta hai because we are using "startswith()"
+  searchquery = "", //starting me undefined rahe se issue aa sakta hai because we are using "startswith()"
 }) => {
   const [openMenuId, setOpenMenuId] = useState(null);
   const [query, setQuery] = useState("");
@@ -19,7 +19,9 @@ const SavedNotes = ({
   const [editedContent, setEditedContent] = useState("");
 
   const menuRefs = useRef({});
+  const renameRef = useRef(null);
 
+  // Handle click outside for menu
   useEffect(() => {
     const handler = (e) => {
       if (
@@ -34,8 +36,7 @@ const SavedNotes = ({
     return () => window.removeEventListener("click", handler);
   }, [openMenuId]);
 
-  const renameRef = useRef(null);
-
+  // Handle click outside for title rename
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -46,11 +47,11 @@ const SavedNotes = ({
         setEditingTitleId(null);
       }
     };
-
     window.addEventListener("mousedown", handleClickOutside);
     return () => window.removeEventListener("mousedown", handleClickOutside);
   }, [editingTitleId]);
 
+  // Update query from searchquery prop
   useEffect(() => {
     const cleanedQuery = searchquery.startsWith("@notes")
       ? searchquery.replace("@notes", "").trim()
@@ -58,6 +59,7 @@ const SavedNotes = ({
     setQuery(cleanedQuery);
   }, [searchquery]);
 
+  // Filter suggestions
   useEffect(() => {
     if (query.trim() === "") {
       setSuggestions([]);
@@ -147,6 +149,83 @@ const SavedNotes = ({
         )}
       </div>
 
+      {/* Inline Edit Panel */}
+      {editingNoteId && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            margin: "20px 0",
+            width: "100%",
+            background: darkMode ? "#1e1e1e" : "#68338a",
+            color: darkMode ? "#fff" : "#fff",
+            padding: "20px",
+            borderRadius: "10px",
+            display: "flex",
+            flexDirection: "column",
+            border: darkMode ? "1px solid #333" : "1px solid #ccc",
+            boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+            minWidth: "100%",
+          }}
+        >
+          <h3 style={{ marginBottom: "10px" }}>Edit Note</h3>
+          <textarea
+            value={editedContent}
+            onChange={(e) => setEditedContent(e.target.value)}
+            style={{
+              width: "100%",
+              minHeight: "700px",
+              maxHeight: "794px",
+              overflowY: "auto",
+              resize: "vertical",
+              fontSize: "16px",
+              padding: "10px",
+              background: darkMode ? "#1e1e1e" : "#f1e4ff",
+              color: darkMode ? "#fff" : "#000",
+              border: "1px solid #aaa",
+              borderRadius: "6px",
+              fontFamily: "monospace",
+              boxSizing: "border-box",
+            }}
+          />
+
+          <div style={{ marginTop: "15px", textAlign: "right" }}>
+            <button
+              onClick={() => {
+                onEditNoteContent(editingNoteId, editedContent);
+                setEditingNoteId(null);
+              }}
+              style={{
+                padding: "8px 16px",
+                marginRight: "10px",
+                background: "#00008B",
+                color: "#fff",
+                border: "none",
+                borderRadius: "6px",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              Save
+            </button>
+            <button
+              onClick={() => setEditingNoteId(null)}
+              style={{
+                padding: "8px 16px",
+                background: "#600763",
+                color: "#fff",
+                border: "none",
+                borderRadius: "6px",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Notes Grid */}
       <div
         style={{
           marginTop: "20px",
@@ -178,6 +257,11 @@ const SavedNotes = ({
                 overflow: "hidden",
                 display: "flex",
                 flexDirection: "column",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                setEditingNoteId(note.id);
+                setEditedContent(note.content);
               }}
             >
               <span
@@ -193,22 +277,7 @@ const SavedNotes = ({
               >
                 {note.pinned ? "⭐" : "☆"}
               </span>
-              <span
-                onClick={() => {
-                  setEditingNoteId(note.id);
-                  setEditedContent(note.content);
-                }}
-                style={{
-                  position: "absolute",
-                  bottom: "10px",
-                  right: "10px",
-                  cursor: "pointer",
-                  fontSize: "18px",
-                }}
-              >
-                ✏️
-              </span>
-
+             
               <button
                 style={{
                   position: "absolute",
@@ -232,8 +301,6 @@ const SavedNotes = ({
                 <div
                   style={{
                     position: "absolute",
-                    top: "35px",
-                    right: "10px",
                     background: darkMode ? "#333" : "#f9f9f9",
                     border: "1px solid #aaa",
                     borderRadius: "6px",
@@ -351,90 +418,7 @@ const SavedNotes = ({
               </div>
             </div>
           ))}
-          </div>
-          {editingNoteId && (
-  <div
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100vw",
-      height: "100vh",
-      backgroundColor: "rgba(0,0,0,0.8)",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 9999,
-    }}
-    onClick={() => setEditingNoteId(null)}
-  >
-    <div
-      onClick={(e) => e.stopPropagation()}
-      style={{
-        width: "90%",
-        maxWidth: "700px",
-        height: "80vh",
-        background: darkMode ? "#1e1e1e" : "#fff",
-        color: darkMode ? "#fff" : "#000",
-        padding: "20px",
-        borderRadius: "10px",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <h3 style={{ marginBottom: "10px" }}>Edit Note</h3>
-      <textarea
-        value={editedContent}
-        onChange={(e) => setEditedContent(e.target.value)}
-        style={{
-          flexGrow: 1,
-          resize: "none",
-          fontSize: "16px",
-          padding: "10px",
-          background: darkMode ? "#333" : "#f0f0f0",
-          color: darkMode ? "#fff" : "#000",
-          border: "1px solid #aaa",
-          borderRadius: "6px",
-        }}
-      />
-      <div style={{ marginTop: "15px", textAlign: "right" }}>
-        <button
-          onClick={() => {
-            onEditNoteContent(editingNoteId, editedContent);
-            setEditingNoteId(null);
-          }}
-          style={{
-            padding: "8px 16px",
-            marginRight: "10px",
-            background: "#4caf50",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          Save
-        </button>
-        <button
-          onClick={() => setEditingNoteId(null)}
-          style={{
-            padding: "8px 16px",
-            background: "#999",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          Cancel
-        </button>
       </div>
-    </div>
-  </div>
-)}
-
     </>
   );
 };
