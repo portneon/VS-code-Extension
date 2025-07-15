@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { CircleCheck } from "lucide-react";
 
-export default function App() {
+export default function CleanupTool({ darkMode }) {
   const [folderPath, setFolderPath] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -49,54 +49,33 @@ export default function App() {
   };
 
   const styles = {
-    container: {
-      maxWidth: 600,
-      margin: "40px auto",
-      padding: 30,
-      fontFamily:
-        '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif',
-      backgroundColor: "#f0e6ff",
-      borderRadius: 12,
-      boxShadow: "0 6px 20px rgba(0, 0, 0, 0.2)",
-      border: "1px solid rgba(107, 70, 193, 0.3)",
-    },
     heading: {
-      fontWeight: "700",
-      fontSize: "2.5rem",
-      color: "#4a2c6d",
-      marginBottom: 20,
+      fontSize: "24px",
+      marginBottom: "18px",
+      color: "#e0b3ff",
       textAlign: "center",
-      textShadow: "1px 1px 3px rgba(0, 0, 0, 0.1)",
-      userSelect: "none",
+      borderBottom: "2px solid rgba(255,255,255,0.15)",
+      paddingBottom: "10px",
+      fontWeight: 700,
     },
     input: {
+      backgroundColor: darkMode ? "#2e2e2e" : "#68338a",
       padding: "14px 18px",
       fontSize: 16,
       width: "calc(100% - 160px)",
       borderRadius: 8,
-      border: "2px solid #6b46c1",
-      outline: "none",
-      transition: "border-color 0.3s, box-shadow 0.3s",
-      backgroundColor: "#e8dfff",
-      color: "#2d1b4d",
-    },
-    inputFocus: {
-      borderColor: "#8a4af3",
-      boxShadow: "0 0 10px rgba(138, 74, 243, 0.4)",
     },
     buttonPrimary: {
       padding: "14px 28px",
       marginLeft: 15,
-      backgroundColor: "#6b46c1",
+      backgroundColor: darkMode ? "#2a2a2a" : "#68338a",
       color: "white",
       fontWeight: "600",
       fontSize: 16,
       borderRadius: 8,
       border: "none",
       cursor: "pointer",
-      transition: "background-color 0.3s, transform 0.1s",
       userSelect: "none",
-      boxShadow: "0 4px 12px rgba(107, 70, 193, 0.3)",
     },
     buttonPrimaryDisabled: {
       backgroundColor: "#a5b4fc",
@@ -182,7 +161,7 @@ export default function App() {
   };
 
   return (
-    <div style={styles.container}>
+    <div>
       <h1 style={styles.heading}>Folder Cleanup Tool</h1>
 
       <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
@@ -193,10 +172,7 @@ export default function App() {
           onChange={(e) => setFolderPath(e.target.value)}
           onFocus={() => setInputFocused(true)}
           onBlur={() => setInputFocused(false)}
-          style={{
-            ...styles.input,
-            ...(inputFocused ? styles.inputFocus : {}),
-          }}
+          style={styles.input}
         />
         <button
           onClick={fetchSuggestions}

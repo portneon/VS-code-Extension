@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from "react";
+import {
+  SearchCode,
+  ChevronLeft,
+  ChevronRight,
+  ArrowBigUp,
+  CheckCheck,
+} from "lucide-react";
 
-const StackOverflow = ({ query: initialQuery = "" }) => {
+const StackOverflow = ({ query: initialQuery = "", darkMode }) => {
   const [query, setQuery] = useState(initialQuery);
   const [suggestions, setSuggestions] = useState([]);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [currentAnswerIndex, setCurrentAnswerIndex] = useState(0);
 
-  // Fetch suggestions when query changes
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (query.trim().length < 3) {
         setSuggestions([]);
         return;
       }
-
       try {
         const res = await fetch(
           `https://api.stackexchange.com/2.3/search?order=desc&sort=relevance&intitle=${encodeURIComponent(
@@ -27,12 +32,10 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
         console.error("Error fetching StackOverflow suggestions:", err);
       }
     };
-
     const debounceTimer = setTimeout(fetchSuggestions, 400);
     return () => clearTimeout(debounceTimer);
   }, [query]);
 
-  // Set initial query from prop
   useEffect(() => {
     if (initialQuery) {
       setQuery(initialQuery);
@@ -44,7 +47,6 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
     setAnswers([]);
     setCurrentAnswerIndex(0);
     setSuggestions([]);
-
     try {
       const [qRes, aRes] = await Promise.all([
         fetch(
@@ -54,49 +56,289 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
           `https://api.stackexchange.com/2.3/questions/${question.question_id}/answers?order=desc&sort=votes&site=stackoverflow&filter=withbody&pagesize=10`
         ),
       ]);
-
       const qData = await qRes.json();
       const aData = await aRes.json();
-
       setSelectedQuestion(qData.items[0]);
       setAnswers(aData.items);
     } catch (err) {
       console.error("Error fetching StackOverflow data:", err);
     }
   };
+  const headingStyle = {
+    fontSize: "24px",
+    marginBottom: "20px",
+    color: "#e0b3ff",
+    textAlign: "center",
+    borderBottom: "2px solid rgba(255,255,255,0.15)",
+    paddingBottom: "10px",
+    fontWeight: 700,
+  };
+  const inputStyle = {
+    backgroundColor: darkMode ? "#2e2e2e" : "#68338a",
+    padding: "14px 18px",
+    fontSize: 16,
+    width: "100%",
+    borderRadius: 12,
+    border: "1px solid rgba(255,255,255,0.2)",
+    color: "#fff",
+    outline: "none",
+    marginBottom: suggestions.length > 0 ? 0 : 12,
+    boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+    resize: "none",
+    minHeight: 44,
+    maxHeight: 80,
+    fontFamily: "inherit",
+    display: "block",
+  };
+  const suggestionListStyle = {
+    position: "absolute",
+    top: "100%",
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    background: darkMode ? "#232136" : "#68338a",
+    border: darkMode ? "1.5px solid #30363d" : "1.5px solid #68338a",
+    borderTop: "none",
+    borderRadius: "0 0 12px 12px",
+    maxHeight: 240,
+    overflowY: "auto",
+    boxShadow: darkMode
+      ? "0 8px 24px rgba(0,0,0,0.35)"
+      : "0 8px 24px rgba(104,51,138,0.10)",
+    fontFamily: "inherit",
+    padding: 0,
+    margin: 0,
+  };
+  const suggestionItemStyle = {
+    padding: "14px 18px",
+    cursor: "pointer",
+    borderBottom: darkMode ? "1px solid #30363d" : "1px solid #7c4dff",
+    background: darkMode ? "#232136" : "#68338a",
+    color: darkMode ? "#e0b3ff" : "#fff",
+    fontSize: 15,
+    borderRadius: 0,
+    transition: "background 0.18s, color 0.18s",
+    fontWeight: 500,
+    outline: "none",
+    userSelect: "none",
+  };
+  const suggestionItemHoverStyle = {
+    background: darkMode ? "#393552" : "#7c4dff",
+    color: "#fff",
+  };
+  const suggestionTitleStyle = {
+    color: darkMode ? "#e0b3ff" : "#fff",
+    fontSize: 14,
+    display: "block",
+    marginBottom: 4,
+    fontWeight: 600,
+  };
+  const suggestionMetaStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 4,
+  };
+  const suggestionScoreStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: 4,
+    color: darkMode ? "#a277ff" : "#ffe066",
+    fontWeight: 600,
+    fontSize: 13,
+  };
+  const suggestionTagsStyle = {
+    display: "flex",
+    gap: 6,
+  };
+  const tagStyle = {
+    background: darkMode ? "#393552" : "#fff",
+    padding: "2px 6px",
+    borderRadius: 4,
+    fontSize: 12,
+    color: darkMode ? "#e0b3ff" : "#68338a",
+    border: darkMode ? "1px solid #30363d" : "1px solid #e5e7eb",
+    fontWeight: 500,
+  };
+  const cardStyle = {
+    marginTop: 24,
+    padding: 20,
+    borderRadius: "12px",
+    backgroundColor: darkMode ? "#2e2e2e" : "#68338a",
+    color: darkMode ? "#fff" : "#374151",
+  };
+  const questionTitleStyle = {
+    fontSize: 20,
+    fontWeight: 700,
+    marginBottom: 8,
+    color: darkMode ? "#e0b3ff" : "#fff",
+    textAlign: "center",
+  };
+  const questionMetaStyle = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 18,
+    marginBottom: 10,
+    flexWrap: "wrap",
+  };
+  const questionScoreStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: 6,
+    color: darkMode ? "#e0b3ff" : "#fff",
+    fontWeight: 600,
+    fontSize: 16,
+    margin: 0,
+    padding: 0,
+  };
+  const ownerStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: 6,
+    fontSize: 13,
+    color: darkMode ? "#e0b3ff" : "#fff",
+  };
+  const avatarStyle = {
+    width: 20,
+    height: 20,
+    borderRadius: "50%",
+  };
+  const bodyStyle = {
+    marginTop: 10,
+    fontSize: 14,
+    lineHeight: 1.6,
+    background: "#1a1a1a",
+    padding: 12,
+    borderRadius: 6,
+    color: "#e6edf3",
+    fontFamily: "Consolas, Monaco, 'Courier New', monospace",
+    maxHeight: 350,
+    overflowY: "auto",
+    wordBreak: "break-word",
+    whiteSpace: "pre-line",
+  };
+  const carouselStyle = {
+    marginTop: 24,
+  };
+  const carouselHeaderStyle = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 24,
+    marginBottom: 12,
+  };
+  const carouselBtnStyle = {
+    backgroundColor: darkMode ? "#2a2a2a" : "#68338a",
+    color: "white",
+    border: "none",
+    padding: "10px 16px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontWeight: "600",
+    fontSize: "18px",
+    transition: "all 0.2s ease",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+    outline: "none",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  };
+  const carouselCountStyle = {
+    fontSize: 14,
+    fontWeight: 600,
+    color: darkMode ? "#e0b3ff" : "#fff",
+  };
+  const answerCardStyle = {
+    padding: 20,
+    borderRadius: 12,
+    backgroundColor: darkMode ? "#2a2a2a" : "#68338a",
+    color: darkMode ? "#e6edf3" : "#374151",
+  };
+  const answerHeaderStyle = {
+    fontSize: 14,
+    marginBottom: 8,
+    display: "flex",
+    gap: 10,
+    alignItems: "center",
+  };
+  const answerScoreStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: 4,
+    color: darkMode ? "#e0b3ff" : "#4b5563",
+    fontWeight: 600,
+  };
+
+  React.useEffect(() => {
+    const rerender = () => forceUpdate((n) => n + 1);
+    window.addEventListener("hoveredSuggestionChange", rerender);
+    return () =>
+      window.removeEventListener("hoveredSuggestionChange", rerender);
+  }, []);
+  const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
 
   return (
-    <div style={styles.container} className="stackoverflow-container">
-      <h2 style={styles.heading}>StackOverflow Search</h2>
-
-      <div style={styles.searchBoxWrapper}>
-        <input
-          type="text"
+    <div>
+      <h2 style={headingStyle}>StackOverflow Search</h2>
+      <div style={{ position: "relative", marginBottom: 16 }}>
+        <textarea
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search StackOverflow..."
-          style={{
-            ...styles.input,
-            borderBottomLeftRadius: suggestions.length > 0 ? 0 : 8,
-            borderBottomRightRadius: suggestions.length > 0 ? 0 : 8,
-          }}
+          style={inputStyle}
+          rows={1}
         />
-        <span style={styles.searchIcon}>🔍</span>
-
+        <span
+          style={{
+            position: "absolute",
+            right: 18,
+            top: "50%",
+            transform: "translateY(-50%)",
+            color: darkMode ? "#e0b3ff" : "#fff",
+            pointerEvents: "none",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <SearchCode size={20} />
+        </span>
         {suggestions.length > 0 && (
-          <div style={styles.suggestions}>
-            {suggestions.map((s) => (
+          <div style={suggestionListStyle}>
+            {suggestions.map((s, idx) => (
               <div
                 key={s.question_id}
-                style={styles.suggestionItem}
+                style={{
+                  ...suggestionItemStyle,
+                  ...(window.__hoveredSuggestion === idx
+                    ? suggestionItemHoverStyle
+                    : {}),
+                  borderBottomLeftRadius:
+                    idx === suggestions.length - 1 ? 12 : 0,
+                  borderBottomRightRadius:
+                    idx === suggestions.length - 1 ? 12 : 0,
+                }}
                 onClick={() => handleSelectQuestion(s)}
+                onMouseEnter={() =>
+                  (window.__hoveredSuggestion = idx) &&
+                  window.dispatchEvent(new Event("hoveredSuggestionChange"))
+                }
+                onMouseLeave={() =>
+                  (window.__hoveredSuggestion = null) &&
+                  window.dispatchEvent(new Event("hoveredSuggestionChange"))
+                }
               >
-                <strong style={styles.suggestionTitle}>{s.title}</strong>
-                <div style={styles.suggestionMeta}>
-                  <span style={styles.suggestionScore}>⬆️ {s.score}</span>
-                  <div style={styles.suggestionTags}>
+                <strong style={suggestionTitleStyle}>{s.title}</strong>
+                <div style={suggestionMetaStyle}>
+                  <span style={suggestionScoreStyle}>
+                    <ArrowBigUp size={16} style={{ verticalAlign: "middle" }} />
+                    <span style={{ marginLeft: 4 }}>{s.score}</span>
+                  </span>
+                  <div style={suggestionTagsStyle}>
                     {s.tags?.slice(0, 3).map((tag) => (
-                      <span key={tag} style={styles.tag}>{tag}</span>
+                      <span key={tag} style={tagStyle}>
+                        {tag}
+                      </span>
                     ))}
                   </div>
                 </div>
@@ -105,92 +347,102 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
           </div>
         )}
       </div>
-
       {selectedQuestion && (
-        <div style={styles.card}>
-          <h3 style={styles.questionTitle}>{selectedQuestion.title}</h3>
-          <div style={styles.questionMeta}>
-            <span style={styles.questionScore}>
-              ⬆️ {selectedQuestion.score} votes
-            </span>
-            <div style={styles.suggestionTags}>
+        <div style={cardStyle}>
+          <h3 style={questionTitleStyle}>{selectedQuestion.title}</h3>
+          <div style={questionMetaStyle}>
+            <p style={questionScoreStyle}>
+              <ArrowBigUp size={22} style={{ marginRight: 2 }} />
+              {selectedQuestion.score} votes
+            </p>
+            <div style={suggestionTagsStyle}>
               {selectedQuestion.tags?.map((tag) => (
-                <span key={tag} style={styles.tag}>{tag}</span>
+                <span key={tag} style={tagStyle}>
+                  {tag}
+                </span>
               ))}
             </div>
             {selectedQuestion.owner && (
-              <span style={styles.owner}>
-                <img src={selectedQuestion.owner.profile_image} alt="user" style={styles.avatar} />
+              <span style={ownerStyle}>
+                <img
+                  src={selectedQuestion.owner.profile_image}
+                  alt="user"
+                  style={avatarStyle}
+                />
                 {selectedQuestion.owner.display_name}
               </span>
             )}
           </div>
           <div
-            style={styles.body}
+            style={bodyStyle}
             dangerouslySetInnerHTML={{ __html: selectedQuestion.body }}
           />
         </div>
       )}
-
       {answers.length > 0 && (
-        <div style={styles.carousel}>
-          <div style={styles.carouselHeader}>
+        <div style={carouselStyle}>
+          <div style={carouselHeaderStyle}>
             <button
-              onClick={() => setCurrentAnswerIndex(i => Math.max(0, i - 1))}
+              onClick={() => setCurrentAnswerIndex((i) => Math.max(0, i - 1))}
               disabled={currentAnswerIndex === 0}
-              style={styles.carouselBtn}
+              style={carouselBtnStyle}
             >
-              ⬅️
+              <ChevronLeft size={22} />
             </button>
-            <span style={styles.carouselCount}>
+            <span style={carouselCountStyle}>
               {currentAnswerIndex + 1} / {answers.length}
             </span>
             <button
               onClick={() =>
-                setCurrentAnswerIndex(i => Math.min(answers.length - 1, i + 1))
+                setCurrentAnswerIndex((i) =>
+                  Math.min(answers.length - 1, i + 1)
+                )
               }
               disabled={currentAnswerIndex === answers.length - 1}
-              style={styles.carouselBtn}
+              style={carouselBtnStyle}
             >
-              ➡️
+              <ChevronRight size={22} />
             </button>
           </div>
-
-          <div
-            style={{
-              ...styles.answerCard,
-              background: answers[currentAnswerIndex].is_accepted
-                ? "#e8f5e8"
-                : "#f9f9f9",
-              border: answers[currentAnswerIndex].is_accepted
-                ? "2px solid #4caf50"
-                : "1px solid #d1d5db",
-            }}
-          >
-            <div style={styles.answerHeader}>
+          <div style={answerCardStyle}>
+            <div style={answerHeaderStyle}>
               {answers[currentAnswerIndex].is_accepted ? (
-                <span style={{ color: "#16a34a", fontWeight: 700 }}>
-                  ✅ Accepted Answer
+                <span
+                  style={{
+                    color: "#00e676",
+                    fontWeight: 700,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                >
+                  <CheckCheck size={16} style={{ verticalAlign: "middle" }} />
+                  Accepted Answer
                 </span>
               ) : (
-                <span style={{ color: "#374151" }}>Answer</span>
+                <span style={{ color: darkMode ? "#e0b3ff" : "#374151" }}>
+                  Answer
+                </span>
               )}
-              <span style={styles.answerScore}>
-                ⬆️ {answers[currentAnswerIndex].score}
+              <span style={answerScoreStyle}>
+                <ArrowBigUp size={16} style={{ verticalAlign: "middle" }} />
+                <span style={{ marginLeft: 4 }}>
+                  {answers[currentAnswerIndex].score}
+                </span>
               </span>
               {answers[currentAnswerIndex].owner && (
-                <span style={styles.owner}>
+                <span style={ownerStyle}>
                   <img
                     src={answers[currentAnswerIndex].owner.profile_image}
                     alt="user"
-                    style={styles.avatar}
+                    style={avatarStyle}
                   />
                   {answers[currentAnswerIndex].owner.display_name}
                 </span>
               )}
             </div>
             <div
-              style={styles.body}
+              style={bodyStyle}
               dangerouslySetInnerHTML={{
                 __html: answers[currentAnswerIndex].body,
               }}
@@ -198,212 +450,8 @@ const StackOverflow = ({ query: initialQuery = "" }) => {
           </div>
         </div>
       )}
-
-      <style>
-        {`
-          .stackoverflow-container * {
-            color: #374151 !important;
-          }
-          .stackoverflow-container p { margin: 0 0 8px 0; color: #374151 !important; }
-          .stackoverflow-container pre { background: #f3f4f6; padding: 8px; border-radius: 4px; color: #1f2937 !important; border: 1px solid #e5e7eb; }
-          .stackoverflow-container code { background: #f3f4f6; padding: 2px 4px; border-radius: 3px; color: #1f2937 !important; }
-          .stackoverflow-container a { color: #0369a1 !important; text-decoration: underline; }
-          .stackoverflow-container h1, .stackoverflow-container h2, .stackoverflow-container h3, 
-          .stackoverflow-container h4, .stackoverflow-container h5, .stackoverflow-container h6 { color: #1f2937 !important; }
-          .stackoverflow-container ul, .stackoverflow-container ol, .stackoverflow-container li { color: #374151 !important; }
-          .stackoverflow-container blockquote { color: #6b7280 !important; border-left: 4px solid #d1d5db; padding-left: 12px; }
-          .stackoverflow-container strong, .stackoverflow-container b { color: #1f2937 !important; }
-          .stackoverflow-container em, .stackoverflow-container i { color: #374151 !important; }
-          .stackoverflow-container span { color: #374151 !important; }
-          .stackoverflow-container div { color: #374151 !important; }
-          .stackoverflow-container input { color: #1f2937 !important; }
-          .stackoverflow-container input::placeholder { color: #6b7280 !important; }
-        `}
-      </style>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    fontFamily: "Segoe UI, sans-serif",
-    padding: 24,
-    maxWidth: 800,
-    margin: "32px auto",
-    background: "#fff",
-    borderRadius: 12,
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-    color: "#374151",
-  },
-  heading: {
-    textAlign: "center",
-    fontSize: 24,
-    fontWeight: 600,
-    marginBottom: 16,
-    color: "#1f2937",
-  },
-  searchBoxWrapper: {
-    position: "relative",
-    marginBottom: 16,
-  },
-  input: {
-    width: "100%",
-    padding: "12px 40px 12px 14px",
-    fontSize: 16,
-    borderRadius: 8,
-    border: "1.5px solid #4b5563",
-    outline: "none",
-    background: "#fff !important",
-    color: "#1f2937 !important",
-    fontFamily: "Segoe UI, sans-serif",
-    boxSizing: "border-box",
-    transition: "border-color 0.2s ease",
-  },
-  searchIcon: {
-    position: "absolute",
-    right: 14,
-    top: "50%",
-    transform: "translateY(-50%)",
-    fontSize: 16,
-    color: "#6b7280",
-  },
-  suggestions: {
-    position: "absolute",
-    top: "100%",
-    left: 0,
-    right: 0,
-    zIndex: 10,
-    background: "#fff",
-    border: "1.5px solid #4b5563",
-    borderTop: "none",
-    borderRadius: "0 0 8px 8px",
-    maxHeight: 240,
-    overflowY: "auto",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-  },
-  suggestionItem: {
-    padding: "12px",
-    cursor: "pointer",
-    borderBottom: "1px solid #e5e7eb",
-    background: "#fff",
-    transition: "background 0.2s",
-    color: "#374151",
-  },
-  suggestionTitle: {
-    color: "#1f2937",
-    fontSize: 14,
-    display: "block",
-    marginBottom: 4,
-  },
-  suggestionMeta: {
-    display: "flex",
-    alignItems: "center",
-    gap: 8,
-    marginTop: 4,
-  },
-  suggestionScore: {
-    color: "#4b5563",
-    fontWeight: 600,
-    fontSize: 13,
-  },
-  suggestionTags: {
-    display: "flex",
-    gap: 6,
-  },
-  tag: {
-    background: "#f3f4f6",
-    padding: "2px 6px",
-    borderRadius: 4,
-    fontSize: 12,
-    color: "#4b5563",
-    border: "1px solid #e5e7eb",
-  },
-  card: {
-    marginTop: 24,
-    padding: 16,
-    border: "1px solid #d1d5db",
-    borderRadius: 10,
-    background: "#fef3c7",
-  },
-  questionTitle: {
-    fontSize: 20,
-    fontWeight: 700,
-    marginBottom: 8,
-    color: "#1f2937",
-  },
-  questionMeta: {
-    display: "flex",
-    gap: 12,
-    marginBottom: 10,
-    flexWrap: "wrap",
-  },
-  questionScore: {
-    color: "#4b5563",
-    fontWeight: 600,
-    fontSize: 14,
-  },
-  owner: {
-    display: "flex",
-    alignItems: "center",
-    gap: 6,
-    fontSize: 13,
-    color: "#4b5563",
-  },
-  avatar: {
-    width: 20,
-    height: 20,
-    borderRadius: "50%",
-  },
-  body: {
-    marginTop: 10,
-    fontSize: 14,
-    lineHeight: 1.6,
-    background: "#fff",
-    padding: 12,
-    borderRadius: 6,
-    border: "1px solid #e5e7eb",
-    color: "#374151",
-  },
-  carousel: {
-    marginTop: 24,
-  },
-  carouselHeader: {
-    display: "flex",
-    justifyContent: "center",
-    gap: 16,
-    marginBottom: 12,
-  },
-  carouselBtn: {
-    padding: "8px 16px",
-    background: "#374151",
-    color: "#fff",
-    border: "none",
-    borderRadius: 6,
-    fontWeight: 600,
-    cursor: "pointer",
-    transition: "background 0.2s ease",
-  },
-  carouselCount: {
-    fontSize: 14,
-    fontWeight: 600,
-    color: "#4b5563",
-  },
-  answerCard: {
-    padding: 16,
-    borderRadius: 10,
-    boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-  },
-  answerHeader: {
-    fontSize: 14,
-    marginBottom: 8,
-    display: "flex",
-    gap: 10,
-    alignItems: "center",
-  },
-  answerScore: {
-    color: "#4b5563",
-    fontWeight: 600,
-  },
 };
 
 export default StackOverflow;
