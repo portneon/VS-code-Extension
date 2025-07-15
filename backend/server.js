@@ -6,6 +6,16 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { findTempFiles } from "./cleanupScanner.js";
 
+import {
+  startSession,
+  stopSession,
+  getStats,
+  getAllSessions,
+  formatDuration,
+  sessions,
+  currentSession,
+} from "./stats.js";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -17,8 +27,51 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send(
-    "Backend is running. Use GET /cleanup-suggestions and DELETE /delete-temp"
+    "Welcome! Use /start, /stop, /stats for session tracking and /cleanup-suggestions, /delete-temp for cleanup."
   );
+});
+
+app.post("/start", (req, res) => {
+  try {
+    const session = startSession();
+    res.json({
+      message: "Coding session started",
+      startTime: session.startTime,
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+app.post("/stop", (req, res) => {
+  try {
+    const session = stopSession();
+    res.json({
+      message: "Coding session stopped.",
+      duration: formatDuration(session.durationMs),
+      session,
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+app.get("/stats", (req, res) => {
+  const stats = getStats();
+  res.json({
+    totalSessions: stats.totalSession,
+    totalTime: formatDuration(stats.totalTimeMs),
+  });
+});
+
+app.get("/sessions", (req, res) => {
+  const sessions = getAllSessions().map((element, index) => ({
+    id: index + 1,
+    startTime: element.startTime,
+    endTime: element.endTime,
+    duration: formatDuration(element.durationMs),
+  }));
+  res.json(sessions);
 });
 
 app.get("/cleanup-suggestions", (req, res) => {
