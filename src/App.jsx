@@ -35,29 +35,34 @@ const App = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [triggerType, setTriggerType] = useState(null);
   const [queryText, setQueryText] = useState("");
-  const [showColorPicker, setShowColorPicker] = useState(false);
-  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
 
   const {
     note,
     setNote,
     savedNotes,
+
+   
+
     // filteredNotes,   
     // searchTerm,
     // setSearchTerm,
+
     warning,
     handleSave,
     handleClear,
     togglePin,
     handleRenameNote,
+
     handleDeleteNote,
+
     handleEditNote,
+
   } = useNotes();
 
   const commonProps = { darkMode, language, translations };
 
-  // ----- CHANGED parseTrigger -----
   const parseTrigger = (input) => {
     const match = input.match(/^@(\w+)\s+(.*)$/);
     return match
@@ -79,7 +84,6 @@ const App = () => {
     setShowSuggestions(false);
   };
 
-  // ----- NEW resetSearch -----
   const resetSearch = () => {
     setSearchQuery("");
     setTriggerType(null);
@@ -109,7 +113,6 @@ const App = () => {
     }
   };
 
-  // ----- CHANGED highlightTriggerWords -----
   const highlightTriggerWords = (text) =>
     text.split(/(@\w+)/g).map((part, i) =>
       part.startsWith("@") ? (
@@ -121,10 +124,12 @@ const App = () => {
       )
     );
 
-  // ----- CHANGED handleToolClick -----
   const handleToolClick = (tool) => setActiveView(tool);
 
-  // ----- CHANGED renderActiveView -----
+  const handleColorPickerToggle = () => {
+    setShowColorPicker(!showColorPicker);
+  };
+
   const renderActiveView = () => {
     switch (activeView) {
       case "notes":
@@ -143,6 +148,7 @@ const App = () => {
             <div className="tool-container">
               <SavedNotes
                 savedNotes={savedNotes} 
+
                 onRenameNote={handleRenameNote}   //1
                 onDeleteNote={handleDeleteNote}   //2
                 onEditNoteContent={handleEditNote}  //3   1,2,3,5,4 teeno useNotes.jsx se aa raha hai 
@@ -182,7 +188,6 @@ const App = () => {
     }
   };
 
-  // ----- CHANGED renderDashboard -----
   const renderDashboard = () => (
     <div className="dashboard-content">
       <div className="tools-grid">
@@ -225,10 +230,6 @@ const App = () => {
         </div>
       </div>
 
-      <div className="dev-tips-section">
-        <h2 className="section-title">File Explorer</h2>
-        <div className="dev-tips-container"></div>
-      </div>
     </div>
   );
 
@@ -255,48 +256,27 @@ const App = () => {
 
             <div className="control-wrapper">
               <button
-                onClick={() => setShowColorPicker(!showColorPicker)}
                 className="control-button color-picker-button"
+                onClick={handleColorPickerToggle}
               />
               {showColorPicker && (
-                <div className="popup-overlay">
-                  <div className="popup-container">
-                    <button
-                      onClick={() => setShowColorPicker(false)}
-                      className="close-button"
-                    >
-                      ×
-                    </button>
-                    <ColorPicker />
-                  </div>
+                <div className="color-picker-popup">
+                  <ColorPicker />
                 </div>
               )}
             </div>
 
-            <div className="control-wrapper">
-              <button
-                onClick={() => setShowLanguageSelector(!showLanguageSelector)}
-                className="control-button language-button"
-              >
+            <div className="control-wrapper hover-popup">
+              <button className="control-button language-button">
                 <Languages className="control-icon" />
               </button>
-              {showLanguageSelector && (
-                <div className="popup-overlay">
-                  <div className="popup-container">
-                    <button
-                      onClick={() => setShowLanguageSelector(false)}
-                      className="close-button"
-                    >
-                      ×
-                    </button>
-                    <LanguageSelector
-                      language={language}
-                      setLanguage={setLanguage}
-                      translations={translations}
-                    />
-                  </div>
-                </div>
-              )}
+              <div className="popup-container">
+                <LanguageSelector
+                  language={language}
+                  setLanguage={setLanguage}
+                  translations={translations}
+                />
+              </div>
             </div>
 
             <div className="control-wrapper">
@@ -380,6 +360,14 @@ const App = () => {
       <div className="hidden">
         <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
       </div>
+
+      {/* Overlay for color picker */}
+      {showColorPicker && (
+        <div
+          className="color-picker-overlay"
+          onClick={() => setShowColorPicker(false)}
+        />
+      )}
     </div>
   );
 };
