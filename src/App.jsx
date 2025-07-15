@@ -8,6 +8,7 @@ import {
   Moon,
   Languages,
   BrushCleaning,
+  ChartNoAxesCombined,
 } from "lucide-react";
 
 import LanguageSelector from "./components/LanguageSelector";
@@ -20,8 +21,8 @@ import StackOverflow from "./components/StackOverflow";
 import ThemeToggle from "./components/ThemeToggle";
 import InternetCheck from "./components/ConnectionStatus";
 
-
 import CleanupTool from "./components/CleanupTool.jsx";
+import CodingStats from "./components/CodingStats.jsx";
 
 import { translations } from "./utils/translations.js";
 import { useNotes } from "./utils/useNotes.js";
@@ -43,9 +44,7 @@ const App = () => {
     setNote,
     savedNotes,
 
-   
-
-    // filteredNotes,   
+    // filteredNotes,
     // searchTerm,
     // setSearchTerm,
 
@@ -57,7 +56,9 @@ const App = () => {
 
     handleDeleteNote,
 
+
     handleEditNote,
+
 
   } = useNotes();
 
@@ -147,6 +148,7 @@ const App = () => {
             </div>
             <div className="tool-container">
               <SavedNotes
+
                 savedNotes={savedNotes} 
 
                 onRenameNote={handleRenameNote}   //1
@@ -155,6 +157,7 @@ const App = () => {
                 onTogglePin={togglePin}  //4
                 searchquery={triggerType === "notes" ? queryText : ""}  //5
                 {...commonProps}  // top me defined hai
+
               />
             </div>
           </div>
@@ -181,6 +184,12 @@ const App = () => {
         return (
           <div className="tool-container">
             <CleanupTool {...commonProps} />
+          </div>
+        );
+      case "stats":
+        return (
+          <div className="tool-container">
+            <CodingStats {...commonProps} />
           </div>
         );
       default:
@@ -221,6 +230,12 @@ const App = () => {
             <h3 className="tool-title">Cleanup Tool</h3>
           </div>
         </div>
+        <div onClick={() => handleToolClick("stats")} className="tool-card">
+          <div className="tool-card-content">
+            <ChartNoAxesCombined className="tool-icon" />
+            <h3 className="tool-title">Coding Stats</h3>
+          </div>
+        </div>
       </div>
 
       <div className="dev-tips-section">
@@ -229,7 +244,6 @@ const App = () => {
           <DevTip />
         </div>
       </div>
-
     </div>
   );
 

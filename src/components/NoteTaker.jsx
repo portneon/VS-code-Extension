@@ -42,7 +42,7 @@ const NoteTaker = ({
   };
 
   const warningStyle = {
-    color: "#cc3300",
+    color: "#fbbf24",
     margin: "30px 0",
     fontWeight: "bold",
     fontSize: "18px",
