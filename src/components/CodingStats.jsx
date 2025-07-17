@@ -178,7 +178,6 @@ function CodingStats({ darkMode }) {
     borderRadius: "12px",
     padding: "24px 20px 20px 20px",
     marginBottom: "24px",
-    boxShadow: "0 4px 10px rgba(90, 54, 112, 0.15)",
     color: "#fff",
     display: "flex",
     flexDirection: "column",
@@ -249,7 +248,7 @@ function CodingStats({ darkMode }) {
   };
 
   return (
-    <div style={containerStyle}>
+    <div>
       <div style={cardStyle}>
         <h2 style={headingStyle}>Total Coding Time</h2>
         <p style={durationStyle}>{formatTime(totalTimeSec)}</p>
