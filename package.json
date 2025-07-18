@@ -1,8 +1,15 @@
 {
-  "name": "react-webview-extension",
-  "displayName": "React Webview Extension",
-  "description": "A simple VS Code extension using React in Webview.",
-  "version": "0.0.1",
+  "name": "Stackmate",
+  "displayName": "Stackmate",
+  "icon": "extension_icon.png",
+  "description": "A Multipurpose VS Code extension using React in Webview.",
+  "version": "0.0.2",
+  "publisher": "Sakina",
+  "license": "MIT",
+  "repository": {
+  "type": "github",
+  "url": "https://github.com/nst-sdc/VS-code-Extension"
+},
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -38,7 +45,8 @@
   "scripts": {
     "start": "webpack serve --mode development",
     "build": "webpack",
-    "watch": "webpack --watch"
+    "watch": "webpack --watch",
+    "serve-backend": "node backend/server.js"
   },
   "categories": [
     "Other"
