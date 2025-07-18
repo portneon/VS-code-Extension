@@ -55,6 +55,11 @@ const App = () => {
     handleRenameNote,
 
     handleDeleteNote,
+
+
+    handleEditNote,
+
+
   } = useNotes();
 
   const commonProps = { darkMode, language, translations };
@@ -143,14 +148,16 @@ const App = () => {
             </div>
             <div className="tool-container">
               <SavedNotes
-                savedNotes={savedNotes}
-                onRenameNote={handleRenameNote}
-                // onDeleteNote={handleDeleteNote}
 
-                onDeleteNote={handleDeleteNote}
-                onTogglePin={togglePin}
-                searchquery={triggerType === "notes" ? queryText : ""}
-                {...commonProps}
+                savedNotes={savedNotes} 
+
+                onRenameNote={handleRenameNote}   //1
+                onDeleteNote={handleDeleteNote}   //2
+                onEditNoteContent={handleEditNote}  //3   1,2,3,5,4 teeno useNotes.jsx se aa raha hai 
+                onTogglePin={togglePin}  //4
+                searchquery={triggerType === "notes" ? queryText : ""}  //5
+                {...commonProps}  // top me defined hai
+
               />
             </div>
           </div>

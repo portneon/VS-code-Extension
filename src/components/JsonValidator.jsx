@@ -225,17 +225,18 @@ const JsonValidator = ({ query, darkMode, language, translations }) => {
     padding: "16px",
     borderRadius: "8px 0px 0px 8px",
     backgroundColor: darkMode ? "#2a2a2a" : "#68338a",
-    border: "none",
+
     color: "#fff",
     fontSize: "14px",
     marginBottom: "10px",
     outline: "none",
     boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+    border:"1px solid white",
   };
   const inputkabutton = {
     backgroundColor: darkMode ? "#2a2a2a" : "#68338a",
     color: "white",
-    border: "none",
+    border: "1px solid white",
     padding: "16px 16px",
     borderRadius: "0px 8px 8px 0px",
     cursor: "pointer",
