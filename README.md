@@ -1,15 +1,24 @@
-# VS Code Notes Extension
+# StackMate - VS Code Extension
 
-A simple Visual Studio Code extension that opens a React-based webview to let users write, save, and clear personal notes right inside VS Code!
-we are gonna add more cool features soon!
+A **multi-purpose Visual Studio Code extension** that opens a React-based webview to help you boost productivity — all **within VS Code**.   
+Take notes, validate JSON, explore Stack Overflow, view coding stats, and more — all in one place!
 ---
 
 ##  Current Features
 
 -  Write and save quick notes
+-  JSON Validator
+-  Stack Overflow shortcut
+-  Coding stats panel
+-  Cleanup Tool
+-  Color picker
+-  Theme switcher (light/dark)
+-  Language switcher
+-  Ineternt connectivity checker
 -  Stores notes using browser `localStorage`
 -  Loads saved notes automatically
--  Built using **React**, **Webpack**, and **VS Code API**
+-  Provides Dev tips
+-  Built with **React**, **Webpack**, and **VS Code API**
 
 ---
 
@@ -97,7 +106,7 @@ npm install -D webpack-cli
 
 2. Not seeing your changes? Rebuild with npx webpack and restart the Extension Host window.
 
-### Made with 💙 by @sakina1303
+### Made with 💙 by @sakina1303 @Kundan-CR7 @Uday-Choudhary @portneon 
 
 
 
