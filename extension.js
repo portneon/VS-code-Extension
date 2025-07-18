@@ -1,9 +1,21 @@
 const vscode = require("vscode");
 const path = require("path");
 const https = require("https");
+const { spawn } = require('child_process');
 
 let panel;
+let backendProcess;
 function activate(context) {
+  // Start backend server
+  backendProcess = spawn('node', ['backend/server.js'], {
+    cwd: __dirname,
+    stdio: 'inherit',
+    shell: true,
+  });
+  backendProcess.on('error', (err) => {
+    console.error('Failed to start backend:', err);
+  });
+
   // Show React Webview Command
   let showWebviewCommand = vscode.commands.registerCommand(
     "extension.showReactWebview",
@@ -191,7 +203,11 @@ function getNonce() {
   ).join("");
 }
 
-function deactivate() { }
+function deactivate() {
+  if (backendProcess) {
+    backendProcess.kill();
+  }
+}
 
 module.exports = {
   activate,

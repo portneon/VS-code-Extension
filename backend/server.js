@@ -27,7 +27,7 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send(
-    "Welcome! Use /start, /stop, /stats for session tracking and /cleanup-suggestions, /delete-temp for cleanup."
+    "Welcome! Use /start, /stop, /stats for session tracking and /cleanup-suggestions, /delete-temp for cleanup. Hope you'll like it!"
   );
 });
 
