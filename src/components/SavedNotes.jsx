@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import jsPDF from "jspdf";
+import { TextSearch } from "lucide-react";
 
 const SavedNotes = ({
   savedNotes,
   onTogglePin,
   onRenameNote,
-
   onDeleteNote,
-
   onEditNoteContent,
   darkMode,
   searchquery = "", //starting me undefined rahe se issue aa sakta hai because we are using "startswith()"
@@ -119,6 +118,19 @@ const SavedNotes = ({
             boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
           }}
         />
+        <span
+          style={{
+            position: "absolute",
+            right: 18,
+            top: "50%",
+            transform: "translateY(-50%)",
+            pointerEvents: "none",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <TextSearch size={20} />
+        </span>
         {suggestions.length > 0 && (
           <ul
             style={{
@@ -420,90 +432,89 @@ const SavedNotes = ({
               </div>
             </div>
           ))}
-          </div>
-          {editingNoteId && (
-  <div
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100vw",
-      height: "100vh",
-      backgroundColor: "rgba(0,0,0,0.8)",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 9999,
-    }}
-    onClick={() => setEditingNoteId(null)}
-  >
-    <div
-      onClick={(e) => e.stopPropagation()}
-      style={{
-        width: "90%",
-        maxWidth: "700px",
-        height: "80vh",
-        background: darkMode ? "#1e1e1e" : "#fff",
-        color: darkMode ? "#fff" : "#000",
-        padding: "20px",
-        borderRadius: "10px",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <h3 style={{ marginBottom: "10px" }}>Edit Note</h3>
-      <textarea
-        value={editedContent}
-        onChange={(e) => setEditedContent(e.target.value)}
-        style={{
-          flexGrow: 1,
-          resize: "none",
-          fontSize: "16px",
-          padding: "10px",
-          background: darkMode ? "#333" : "#f0f0f0",
-          color: darkMode ? "#fff" : "#000",
-          border: "1px solid #aaa",
-          borderRadius: "6px",
-        }}
-      />
-      <div style={{ marginTop: "15px", textAlign: "right" }}>
-        <button
-          onClick={() => {
-            onEditNoteContent(editingNoteId, editedContent);
-            setEditingNoteId(null);
-          }}
-          style={{
-            padding: "8px 16px",
-            marginRight: "10px",
-            background: "#4caf50",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          Save
-        </button>
-        <button
-          onClick={() => setEditingNoteId(null)}
-          style={{
-            padding: "8px 16px",
-            background: "#999",
-            color: "#fff",
-            border: "none",
-            borderRadius: "6px",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          Cancel
-        </button>
       </div>
-    </div>
-  </div>
-)}
-
+      {editingNoteId && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.8)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+          onClick={() => setEditingNoteId(null)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "90%",
+              maxWidth: "700px",
+              height: "80vh",
+              background: darkMode ? "#1e1e1e" : "#fff",
+              color: darkMode ? "#fff" : "#000",
+              padding: "20px",
+              borderRadius: "10px",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <h3 style={{ marginBottom: "10px" }}>Edit Note</h3>
+            <textarea
+              value={editedContent}
+              onChange={(e) => setEditedContent(e.target.value)}
+              style={{
+                flexGrow: 1,
+                resize: "none",
+                fontSize: "16px",
+                padding: "10px",
+                background: darkMode ? "#333" : "#f0f0f0",
+                color: darkMode ? "#fff" : "#000",
+                border: "1px solid #aaa",
+                borderRadius: "6px",
+              }}
+            />
+            <div style={{ marginTop: "15px", textAlign: "right" }}>
+              <button
+                onClick={() => {
+                  onEditNoteContent(editingNoteId, editedContent);
+                  setEditingNoteId(null);
+                }}
+                style={{
+                  padding: "8px 16px",
+                  marginRight: "10px",
+                  background: "#4caf50",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                Save
+              </button>
+              <button
+                onClick={() => setEditingNoteId(null)}
+                style={{
+                  padding: "8px 16px",
+                  background: "#999",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
